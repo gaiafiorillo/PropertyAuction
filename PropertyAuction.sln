@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyAuction", "PropertyAuction\PropertyAuction.csproj", "{8C8ED3A7-1B86-416C-95B9-FC9FE5051E17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyAuction.Core", "PropertyAuction.Core\PropertyAuction.Core.csproj", "{AA5D673D-E52F-4F7C-B08A-542A0812DF1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyAuction.DataStructures", "PropertyAuction.DataStructures\PropertyAuction.DataStructures.csproj", "{52FAAE54-92E7-45EE-A445-BD8D57522C34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyAuction.Data", "PropertyAuction.Data\PropertyAuction.Data.csproj", "{60CF68AA-D66A-4490-BF47-132B1C26AD64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyAuction.Services", "PropertyAuction.Services\PropertyAuction.Services.csproj", "{21221665-C527-491A-93E2-D88115429757}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyAuction.Tests.Unit", "tests\PropertyAuction.Tests.Unit\PropertyAuction.Tests.Unit.csproj", "{54E3CE60-2FE1-4FC4-8B25-012818F0E441}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyAuction.Security", "PropertyAuction.Security\PropertyAuction.Security.csproj", "{0AAA141C-3275-4AA3-8390-B2904875DBB6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C8ED3A7-1B86-416C-95B9-FC9FE5051E17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C8ED3A7-1B86-416C-95B9-FC9FE5051E17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C8ED3A7-1B86-416C-95B9-FC9FE5051E17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C8ED3A7-1B86-416C-95B9-FC9FE5051E17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA5D673D-E52F-4F7C-B08A-542A0812DF1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA5D673D-E52F-4F7C-B08A-542A0812DF1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA5D673D-E52F-4F7C-B08A-542A0812DF1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA5D673D-E52F-4F7C-B08A-542A0812DF1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52FAAE54-92E7-45EE-A445-BD8D57522C34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52FAAE54-92E7-45EE-A445-BD8D57522C34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52FAAE54-92E7-45EE-A445-BD8D57522C34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52FAAE54-92E7-45EE-A445-BD8D57522C34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60CF68AA-D66A-4490-BF47-132B1C26AD64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60CF68AA-D66A-4490-BF47-132B1C26AD64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60CF68AA-D66A-4490-BF47-132B1C26AD64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60CF68AA-D66A-4490-BF47-132B1C26AD64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21221665-C527-491A-93E2-D88115429757}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21221665-C527-491A-93E2-D88115429757}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21221665-C527-491A-93E2-D88115429757}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21221665-C527-491A-93E2-D88115429757}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54E3CE60-2FE1-4FC4-8B25-012818F0E441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54E3CE60-2FE1-4FC4-8B25-012818F0E441}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54E3CE60-2FE1-4FC4-8B25-012818F0E441}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54E3CE60-2FE1-4FC4-8B25-012818F0E441}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AAA141C-3275-4AA3-8390-B2904875DBB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AAA141C-3275-4AA3-8390-B2904875DBB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AAA141C-3275-4AA3-8390-B2904875DBB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AAA141C-3275-4AA3-8390-B2904875DBB6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
