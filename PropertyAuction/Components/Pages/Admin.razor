@@ -1,0 +1,81 @@
+@page "/admin"
+
+<PageTitle>Admin Panel - Property Auction</PageTitle>
+
+<!-- Admin Header -->
+<div class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <div class="admin-nav">
+        <a href="/" class="admin-nav-link">← Back to Home</a>
+    </div>
+</div>
+
+<div class="admin-container">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Pending Approvals</h3>
+            <p class="stat-number">12</p>
+        </div>
+        <div class="stat-card">
+            <h3>Active Auctions</h3>
+            <p class="stat-number">45</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Users</h3>
+            <p class="stat-number">234</p>
+        </div>
+    </div>
+
+    <!-- Pending Listings -->
+    <div class="admin-section">
+        <h2>Pending Property Approvals</h2>
+        
+        <div class="listings-table">
+            @for (int i = 0; i < 5; i++)
+            {
+                <div class="listing-row">
+                    <div class="listing-info">
+                        <h3>@GetPropertyName(i)</h3>
+                        <p class="listing-meta">
+                            <span>📍 @GetLocation(i)</span>
+                            <span>💰 £@((85000 + i * 5000).ToString("N0"))</span>
+                        </p>
+                        <p class="listing-org">Organisation: ABC Property Ltd</p>
+                        <p class="listing-date">Submitted @(i + 1) hours ago</p>
+                    </div>
+                    <div class="listing-actions">
+                        <button class="btn-approve" @onclick="() => ApproveListing(i)">✓ Approve</button>
+                        <button class="btn-reject" @onclick="() => RejectListing(i)">✗ Reject</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private string GetPropertyName(int i)
+    {
+        string[] names = { "3 Bed House", "2 Bed Flat", "Office Space", "Warehouse", "Studio Apartment" };
+        return names[i % names.Length];
+    }
+
+    private string GetLocation(int i)
+    {
+        string[] locations = { "London", "Manchester", "Birmingham", "Leeds", "Glasgow" };
+        return locations[i % locations.Length];
+    }
+
+    private void ApproveListing(int id)
+    {
+        Console.WriteLine($"Approved listing {id}");
+        // TODO: Team will implement - update database status to "Approved"
+    }
+
+    private void RejectListing(int id)
+    {
+        Console.WriteLine($"Rejected listing {id}");
+        // TODO: Team will implement - update database status to "Rejected"
+    }
+}

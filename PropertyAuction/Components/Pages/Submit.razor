@@ -1,0 +1,206 @@
+@page "/submit"
+
+<PageTitle>Submit Property - Property Auction</PageTitle>
+
+<!-- Header -->
+<div class="site-header">
+    <button class="icon-btn" @onclick='() => NavigateHome()'>
+        <span class="icon">🏠</span>
+    </button>
+    <h1 class="site-title">Property Auction</h1>
+    <a href="/submit" class="header-link">Sell properties for organisations</a>
+    <button class="icon-btn">
+        <span class="icon">👤</span>
+    </button>
+</div>
+
+<div class="submit-container">
+    <div class="submit-header">
+        <h1>Submit Property for Review</h1>
+        <p>Fill in the details below for admin approval</p>
+    </div>
+
+    <div class="submit-form">
+        <div class="form-section">
+            <h2>Property Information</h2>
+            
+            <div class="form-group">
+                <label for="title">Property Title *</label>
+                <input type="text" id="title" @bind="propertyTitle" 
+                       placeholder="3 Bed House" class="form-input" required />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <textarea id="description" @bind="propertyDescription" 
+                          placeholder="Modern family home with garden and parking" 
+                          class="form-textarea" rows="5" required></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="location">Location *</label>
+                    <input type="text" id="location" @bind="propertyLocation" 
+                           placeholder="London, UK" class="form-input" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="propertyType">Property Type *</label>
+                    <select id="propertyType" @bind="propertyType" class="form-input" required>
+                        <option value="">Select type</option>
+                        <option value="Residential">Residential</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Industrial">Industrial</option>
+                        <option value="Land">Land</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="minPrice">Starting Bid Price (£) *</label>
+                    <input type="number" id="minPrice" @bind="minPrice" 
+                           placeholder="80000" class="form-input" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="reservePrice">Reserve Price (£)</label>
+                    <input type="number" id="reservePrice" @bind="reservePrice" 
+                           placeholder="100000" class="form-input" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Property Images</h2>
+            <div class="form-group">
+                <label for="images">Upload Images</label>
+                <div class="image-upload-area">
+                    <input type="file" id="images" accept="image/*" multiple 
+                           @onchange="HandleImageUpload" class="file-input" />
+                    <div class="upload-placeholder">
+                        <span class="upload-icon">📷</span>
+                        <p>Click to upload property images</p>
+                        <p class="upload-hint">or drag and drop (Max 10 images)</p>
+                    </div>
+                </div>
+                @if (uploadedImages.Count > 0)
+                {
+                    <div class="uploaded-images">
+                        @foreach (var img in uploadedImages)
+                        {
+                            <div class="image-preview">
+                                <span>@img</span>
+                                <button type="button" @onclick="() => RemoveImage(img)">✕</button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Organisation Details</h2>
+            
+            <div class="form-group">
+                <label for="orgName">Organisation Name *</label>
+                <input type="text" id="orgName" @bind="organisationName" 
+                       placeholder="ABC Property Ltd" class="form-input" required />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="contactName">Contact Name *</label>
+                    <input type="text" id="contactName" @bind="contactName" 
+                           placeholder="John Smith" class="form-input" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="contactEmail">Contact Email *</label>
+                    <input type="email" id="contactEmail" @bind="contactEmail" 
+                           placeholder="contact@company.com" class="form-input" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="contactPhone">Contact Phone *</label>
+                <input type="tel" id="contactPhone" @bind="contactPhone" 
+                       placeholder="+44 20 1234 5678" class="form-input" required />
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Auction Duration</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="startDate">Auction Start Date *</label>
+                    <input type="date" id="startDate" @bind="startDate" class="form-input" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="endDate">Auction End Date *</label>
+                    <input type="date" id="endDate" @bind="endDate" class="form-input" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn-cancel" @onclick="Cancel">Cancel</button>
+            <button type="submit" class="btn-submit" @onclick="SubmitProperty">Submit for Approval</button>
+        </div>
+
+        @if (showSuccessMessage)
+        {
+            <div class="success-message">
+                ✓ Property submitted successfully! It will be reviewed by our admin team.
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string propertyTitle = "";
+    private string propertyDescription = "";
+    private string propertyLocation = "";
+    private string propertyType = "";
+    private decimal minPrice = 0;
+    private decimal? reservePrice;
+    private string organisationName = "";
+    private string contactName = "";
+    private string contactEmail = "";
+    private string contactPhone = "";
+    private DateTime startDate = DateTime.Now;
+    private DateTime endDate = DateTime.Now.AddDays(7);
+    private List<string> uploadedImages = new();
+    private bool showSuccessMessage = false;
+
+    private void HandleImageUpload(ChangeEventArgs e)
+    {
+        // TODO: Team will implement actual file upload
+        Console.WriteLine("Image upload triggered");
+        uploadedImages.Add("sample-image.jpg");
+    }
+
+    private void RemoveImage(string imageName)
+    {
+        uploadedImages.Remove(imageName);
+    }
+
+    private void SubmitProperty()
+    {
+        // TODO: Team will implement validation and database save
+        Console.WriteLine($"Submitting property: {propertyTitle}");
+        showSuccessMessage = true;
+    }
+
+    private void Cancel()
+    {
+        Console.WriteLine("Cancelled");
+    }
+
+    private void NavigateHome()
+    {
+        Console.WriteLine("Navigate home");
+    }
+}

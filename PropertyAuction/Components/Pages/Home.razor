@@ -1,7 +1,150 @@
-﻿@page "/"
+@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Property Auction Platform</PageTitle>
 
-<h1>Hello, world!</h1>
+<!-- Header -->
+<div class="site-header">
+    <button class="icon-btn" @onclick="NavigateHome">
+        <span class="icon">🏠</span>
+    </button>
+    <h1 class="site-title">Property Auction</h1>
+    <a href="/submit" class="header-link">Sell properties for organisations</a>
+    <button class="icon-btn" @onclick="NavigateToProfile">
+        <span class="icon">👤</span>
+    </button>
+</div>
 
-Welcome to your new app.
+<!-- Filter Search Section -->
+<div class="filter-section">
+    <h2>Filter search</h2>
+    
+    <div class="filter-container">
+        <div class="filter-item">
+            <label>Location</label>
+            <select @bind="selectedLocation" class="filter-input">
+                <option value="">Select location</option>
+                <option value="London">London</option>
+                <option value="Manchester">Manchester</option>
+                <option value="Birmingham">Birmingham</option>
+            </select>
+        </div>
+
+        <div class="filter-item">
+            <label>Property type</label>
+            <select @bind="selectedPropertyType" class="filter-input">
+                <option value="">Select type</option>
+                <option value="Residential">Residential</option>
+                <option value="Commercial">Commercial</option>
+            </select>
+        </div>
+
+        <div class="filter-item">
+            <label>Min price</label>
+            <input type="text" @bind="minPrice" placeholder="£5,000" class="filter-input" />
+        </div>
+
+        <div class="filter-item">
+            <label>Max price</label>
+            <input type="text" @bind="maxPrice" placeholder="£30,000" class="filter-input" />
+        </div>
+
+        <button class="update-btn" @onclick="UpdatePreferences">
+            Update preferences
+        </button>
+    </div>
+</div>
+
+<!-- Properties Section -->
+<div class="properties-section">
+    <h2>Properties for auction</h2>
+    
+    <div class="property-grid">
+        @for (int i = 0; i < 6; i++)
+        {
+            <div class="property-card">
+                <div class="property-image-placeholder">
+                    <span class="image-icon">🏠</span>
+                    <p>Image placeholder</p>
+                </div>
+                
+                <div class="card-header">
+                    <div class="property-info">
+                        <h3 class="property-title">3 Bed House</h3>
+                        <p class="property-location">📍 London, UK</p>
+                    </div>
+                    <button class="bookmark-btn" @onclick="() => ToggleBookmark(i)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <p class="property-description">
+                    Modern family home with garden and parking. Close to schools and transport.
+                </p>
+                
+                <div class="property-details">
+                    <div class="price-section">
+                        <span class="current-bid-label">Current Bid</span>
+                        <p class="property-price">£@((80000 + (i * 5000)).ToString("N0"))</p>
+                    </div>
+                    <div class="time-left">
+                        <span class="time-left-label">Time left</span>
+                        <p class="time-remaining">2d 14h 23m</p>
+                    </div>
+                </div>
+                
+                <button class="bid-btn" @onclick="() => PlaceBid(i)">
+                    Place Bid
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>About</h3>
+            <a href="/about">About Us</a>
+            <a href="/terms">Terms & Conditions</a>
+        </div>
+        <div class="footer-section">
+            <h3>Contact</h3>
+            <a href="/contact">Contact Us</a>
+        </div>
+    </div>
+</footer>
+
+@code {
+    private string selectedLocation = "";
+    private string selectedPropertyType = "";
+    private string minPrice = "";
+    private string maxPrice = "";
+
+    private void UpdatePreferences()
+    {
+        Console.WriteLine($"Searching: {selectedLocation}, {selectedPropertyType}, {minPrice}-{maxPrice}");
+    }
+
+    private void NavigateHome()
+    {
+        Console.WriteLine("Navigate home");
+    }
+
+    private void NavigateToProfile()
+    {
+        Console.WriteLine("Navigate to profile");
+    }
+
+    private void ToggleBookmark(int index)
+    {
+        Console.WriteLine($"Toggled bookmark for property {index}");
+    }
+
+    private void PlaceBid(int index)
+    {
+        Console.WriteLine($"Place bid for property {index}");
+    }
+}
