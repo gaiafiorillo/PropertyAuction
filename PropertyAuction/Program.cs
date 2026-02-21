@@ -5,6 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+// Register  services
+builder.Services.AddSingleton<PropertyAuction.Services.Services.AuctionService>();
+// builder.Services.AddSingleton<PropertyAuction.Services.Services.UserService>(); 
 
 var app = builder.Build();
 

@@ -1,4 +1,8 @@
-﻿@page "/"
+﻿@rendermode InteractiveServer
+@page "/"
+@using PropertyAuction.Core.Models
+@using PropertyAuction.Services.Services
+@inject AuctionService AuctionService
 
 <PageTitle>Property Auction Platform</PageTitle>
 
@@ -21,7 +25,7 @@
         <div class="filter-item">
             <label>Location</label>
             <select @bind="selectedLocation" class="filter-input">
-                <option value="">Select location</option>
+                <option value="">All Locations</option>
                 <option value="London">London</option>
                 <option value="Manchester">Manchester</option>
                 <option value="Birmingham">Birmingham</option>
@@ -30,21 +34,22 @@
 
         <div class="filter-item">
             <label>Property type</label>
-            <select @bind="selectedPropertyType" class="filter-input">
-                <option value="">Select type</option>
-                <option value="Residential">Residential</option>
-                <option value="Commercial">Commercial</option>
+            <select @bind="selectedCategory" class="filter-input">
+                <option value="">All Types</option>
+                <option value="houses">Houses</option>
+                <option value="flats">Flats</option>
+                <option value="shops">Shops</option>
             </select>
         </div>
 
         <div class="filter-item">
             <label>Min price</label>
-            <input type="text" @bind="minPrice" placeholder="£5,000" class="filter-input" />
+            <input type="number" @bind="minPrice" placeholder="5000" class="filter-input" />
         </div>
 
         <div class="filter-item">
             <label>Max price</label>
-            <input type="text" @bind="maxPrice" placeholder="£30,000" class="filter-input" />
+            <input type="number" @bind="maxPrice" placeholder="1000000" class="filter-input" />
         </div>
 
         <button class="update-btn" @onclick="UpdatePreferences">
@@ -55,50 +60,60 @@
 
 <!-- Properties Section -->
 <div class="properties-section">
-    <h2>Properties for auction</h2>
+    <h2>Properties for auction (@filteredAuctions.Count)</h2>
     
-    <div class="property-grid">
-        @for (int i = 0; i < 6; i++)
-        {
-            <div class="property-card">
-                <div class="property-image-placeholder">
-                    <span class="image-icon">🏠</span>
-                    <p>Image placeholder</p>
-                </div>
-                
-                <div class="card-header">
-                    <div class="property-info">
-                        <h3 class="property-title">3 Bed House</h3>
-                        <p class="property-location">📍 London, UK</p>
+    @if (!filteredAuctions.Any())
+    {
+        <div class="empty-state">
+            <p>No properties found matching your criteria.</p>
+            <button class="update-btn" @onclick="ClearFilters">Clear filters</button>
+        </div>
+    }
+    else
+    {
+        <div class="property-grid">
+            @foreach (var auction in filteredAuctions)
+            {
+                <div class="property-card">
+                    <div class="property-image-placeholder">
+                        <span class="image-icon">🏠</span>
+                        <p>@auction.Category</p>
                     </div>
-                    <button class="bookmark-btn" @onclick="() => ToggleBookmark(i)">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                        </svg>
+                    
+                    <div class="card-header">
+                        <div class="property-info">
+                            <h3 class="property-title">@auction.Title</h3>
+                            <p class="property-location">📍 @auction.Location</p>
+                        </div>
+                        <button class="bookmark-btn" @onclick="() => ToggleBookmark(auction.AuctionId)">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <p class="property-description">
+                        @auction.Description
+                    </p>
+                    
+                    <div class="property-details">
+                        <div class="price-section">
+                            <span class="current-bid-label">Current Bid</span>
+                            <p class="property-price">£@auction.CurrentHighestBid.ToString("N0")</p>
+                        </div>
+                        <div class="time-left">
+                            <span class="time-left-label">Time left</span>
+                            <p class="time-remaining">@GetTimeRemaining(auction.EndTime)</p>
+                        </div>
+                    </div>
+                    
+                    <button class="bid-btn" @onclick="() => PlaceBid(auction.AuctionId)">
+                        Place Bid
                     </button>
                 </div>
-                
-                <p class="property-description">
-                    Modern family home with garden and parking. Close to schools and transport.
-                </p>
-                
-                <div class="property-details">
-                    <div class="price-section">
-                        <span class="current-bid-label">Current Bid</span>
-                        <p class="property-price">£@((80000 + (i * 5000)).ToString("N0"))</p>
-                    </div>
-                    <div class="time-left">
-                        <span class="time-left-label">Time left</span>
-                        <p class="time-remaining">2d 14h 23m</p>
-                    </div>
-                </div>
-                
-                <button class="bid-btn" @onclick="() => PlaceBid(i)">
-                    Place Bid
-                </button>
-            </div>
-        }
-    </div>
+            }
+        </div>
+    }
 </div>
 
 <!-- Footer -->
@@ -117,14 +132,88 @@
 </footer>
 
 @code {
+    // All auctions from BST
+    private List<Auction> allAuctions = new();
+    
+    // Filtered auctions to display
+    private List<Auction> filteredAuctions = new();
+    
+    // Filter values
     private string selectedLocation = "";
-    private string selectedPropertyType = "";
-    private string minPrice = "";
-    private string maxPrice = "";
+    private string selectedCategory = "";
+    private decimal? minPrice;
+    private decimal? maxPrice;
+
+    protected override void OnInitialized()
+    {
+        // Load auctions from BST via AuctionService
+        allAuctions = AuctionService.GetAll();
+        filteredAuctions = allAuctions;
+    }
 
     private void UpdatePreferences()
     {
-        Console.WriteLine($"Searching: {selectedLocation}, {selectedPropertyType}, {minPrice}-{maxPrice}");
+        // Start with all auctions
+        filteredAuctions = allAuctions;
+        
+        // Filter by location
+        if (!string.IsNullOrEmpty(selectedLocation))
+        {
+            filteredAuctions = filteredAuctions
+                .Where(a => a.Location == selectedLocation)
+                .ToList();
+        }
+        
+        // Filter by category
+        if (!string.IsNullOrEmpty(selectedCategory))
+        {
+            filteredAuctions = filteredAuctions
+                .Where(a => a.Category == selectedCategory)
+                .ToList();
+        }
+        
+        // Filter by min price
+        if (minPrice.HasValue)
+        {
+            filteredAuctions = filteredAuctions
+                .Where(a => a.CurrentHighestBid >= minPrice.Value)
+                .ToList();
+        }
+        
+        // Filter by max price
+        if (maxPrice.HasValue)
+        {
+            filteredAuctions = filteredAuctions
+                .Where(a => a.CurrentHighestBid <= maxPrice.Value)
+                .ToList();
+        }
+        StateHasChanged();  
+    }
+    
+    private void ClearFilters()
+    {
+        selectedLocation = "";
+        selectedCategory = "";
+        minPrice = null;
+        maxPrice = null;
+        filteredAuctions = allAuctions;
+    }
+
+    private string GetTimeRemaining(DateTime endTime)
+    {
+        var timeLeft = endTime - DateTime.Now;
+        
+        if (timeLeft.TotalSeconds <= 0)
+        {
+            return "Ended";
+        }
+        
+        if (timeLeft.TotalDays >= 1)
+        {
+            return $"{(int)timeLeft.TotalDays}d {timeLeft.Hours}h {timeLeft.Minutes}m";
+        }
+        
+        return $"{timeLeft.Hours}h {timeLeft.Minutes}m";
     }
 
     private void NavigateHome()
@@ -137,13 +226,14 @@
         Console.WriteLine("Navigate to profile");
     }
 
-    private void ToggleBookmark(int index)
+    private void ToggleBookmark(int auctionId)
     {
-        Console.WriteLine($"Toggled bookmark for property {index}");
+        Console.WriteLine($"Toggled bookmark for auction {auctionId}");
     }
 
-    private void PlaceBid(int index)
+    private void PlaceBid(int auctionId)
     {
-        Console.WriteLine($"Place bid for property {index}");
+        Console.WriteLine($"Place bid for auction {auctionId}");
     }
+    
 }
