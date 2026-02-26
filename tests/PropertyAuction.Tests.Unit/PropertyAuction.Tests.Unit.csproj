@@ -21,8 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\PropertyAuction.DataStructures\PropertyAuction.DataStructures.csproj" />
-      <ProjectReference Include="..\..\PropertyAuction.Services\PropertyAuction.Services.csproj" />
+      <ProjectReference Include="..\..\src\PropertyAuction.DataStructures\PropertyAuction.DataStructures.csproj" />
+      <ProjectReference Include="..\..\src\PropertyAuction.Services\PropertyAuction.Services.csproj" />
     </ItemGroup>
 
 </Project>
