@@ -6,21 +6,40 @@ namespace PropertyAuction.Services.Services;
 public class AuctionService
 {
     private readonly AuctionBST _tree;
+    private BidService? _bidService; // Add this
     
     public AuctionService()
     {
         _tree = new AuctionBST();
         LoadSampleData();
+        
+        // Create BidService with same BST instance
+        _bidService = new BidService(_tree);
+        LoadSampleBids();
     }
     
     public void AddAuction(Auction auction) => _tree.Insert(auction);
     
     public Auction? GetById(int id) => _tree.Search(id);
     
-    public List<Auction> GetAll() => _tree.GetAllSorted();      
+    public List<Auction> GetAll() => _tree.GetAllSorted();
+    
     public List<Auction> GetActive()
     {
         return GetAll().Where(a => a.IsActive()).ToList();
+    }
+    
+    public AuctionBST GetTree() => _tree;
+    
+    public BidService GetBidService() => _bidService!; // Add this
+    
+    private void LoadSampleBids()
+    {
+        _bidService!.PlaceBid(1, 101, 460000);
+        _bidService.PlaceBid(1, 102, 470000);
+        _bidService.PlaceBid(1, 103, 480000);
+        _bidService.PlaceBid(2, 104, 190000);
+        _bidService.PlaceBid(2, 105, 195000);
     }
     
     private void LoadSampleData()

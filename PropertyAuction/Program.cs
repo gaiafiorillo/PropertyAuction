@@ -5,8 +5,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-// Register  services
+// Register services
 builder.Services.AddSingleton<PropertyAuction.Services.Services.AuctionService>();
+
+// Change BidService registration to use the one from AuctionService
+builder.Services.AddSingleton<PropertyAuction.Services.Services.BidService>(sp =>
+{
+    var auctionService = sp.GetRequiredService<PropertyAuction.Services.Services.AuctionService>();
+    return auctionService.GetBidService(); // Use the existing instance!
+});
+
 // builder.Services.AddSingleton<PropertyAuction.Services.Services.UserService>(); 
 
 var app = builder.Build();

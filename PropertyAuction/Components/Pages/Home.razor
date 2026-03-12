@@ -3,6 +3,7 @@
 @using PropertyAuction.Core.Models
 @using PropertyAuction.Services.Services
 @inject AuctionService AuctionService
+@inject BidService BidService
 
 <PageTitle>Property Auction Platform</PageTitle>
 
@@ -100,6 +101,8 @@
                         <div class="price-section">
                             <span class="current-bid-label">Current Bid</span>
                             <p class="property-price">£@auction.CurrentHighestBid.ToString("N0")</p>
+                            <span class="bid-count">@GetBidCount(auction.AuctionId) bids</span> 
+
                         </div>
                         <div class="time-left">
                             <span class="time-left-label">Time left</span>
@@ -132,6 +135,11 @@
 </footer>
 
 @code {
+    //getbid ocunt
+    private int GetBidCount(int auctionId)
+    {
+        return BidService.GetBidCount(auctionId);
+    }
     // All auctions from BST
     private List<Auction> allAuctions = new();
     
