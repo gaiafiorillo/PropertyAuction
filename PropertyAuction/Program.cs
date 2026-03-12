@@ -15,7 +15,12 @@ builder.Services.AddSingleton<PropertyAuction.Services.Services.BidService>(sp =
     return auctionService.GetBidService(); // Use the existing instance!
 });
 
-// builder.Services.AddSingleton<PropertyAuction.Services.Services.UserService>(); 
+//register admin service
+builder.Services.AddSingleton<PropertyAuction.Services.Services.AdminService>(sp =>
+{
+    var auctionService = sp.GetRequiredService<PropertyAuction.Services.Services.AuctionService>();
+    return new PropertyAuction.Services.Services.AdminService(auctionService.GetTree());
+});
 
 var app = builder.Build();
 

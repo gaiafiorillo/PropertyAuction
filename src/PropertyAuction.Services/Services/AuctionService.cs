@@ -6,17 +6,36 @@ namespace PropertyAuction.Services.Services;
 public class AuctionService
 {
     private readonly AuctionBST _tree;
-    private BidService? _bidService; // Add this
+    private BidService? _bidService;
+    private int _nextAuctionId;
     
     public AuctionService()
     {
         _tree = new AuctionBST();
+        _nextAuctionId = 5; // Start after sample data
         LoadSampleData();
         
-        // Create BidService with same BST instance
         _bidService = new BidService(_tree);
         LoadSampleBids();
     }
+    
+    // Add this method
+    public int SubmitAuction(Auction auction)
+    {
+        auction.AuctionId = _nextAuctionId++;
+        auction.Status = AuctionStatus.Pending;
+        _tree.Insert(auction);
+        Console.WriteLine($"Added auction #{auction.AuctionId} '{auction.Title}' with status Pending");
+        return auction.AuctionId;
+    }
+    
+    // Update GetActive to only show Active auctions
+    public List<Auction> GetActive()
+    {
+        return GetAll().Where(a => a.Status == AuctionStatus.Active).ToList();
+    }
+
+    
     
     public void AddAuction(Auction auction) => _tree.Insert(auction);
     
@@ -24,14 +43,9 @@ public class AuctionService
     
     public List<Auction> GetAll() => _tree.GetAllSorted();
     
-    public List<Auction> GetActive()
-    {
-        return GetAll().Where(a => a.IsActive()).ToList();
-    }
-    
     public AuctionBST GetTree() => _tree;
     
-    public BidService GetBidService() => _bidService!; // Add this
+    public BidService GetBidService() => _bidService!; 
     
     private void LoadSampleBids()
     {

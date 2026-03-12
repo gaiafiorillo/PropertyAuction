@@ -1,4 +1,9 @@
 @page "/submit"
+@rendermode InteractiveServer
+@using PropertyAuction.Core.Models
+@using PropertyAuction.Services.Services
+@inject AuctionService AuctionService
+@inject NavigationManager Navigation
 
 <PageTitle>Submit Property - Property Auction</PageTitle>
 
@@ -174,6 +179,7 @@
     private DateTime endDate = DateTime.Now.AddDays(7);
     private List<string> uploadedImages = new();
     private bool showSuccessMessage = false;
+    private string errorMessage = "";
 
     private void HandleImageUpload(ChangeEventArgs e)
     {
@@ -189,18 +195,76 @@
 
     private void SubmitProperty()
     {
-        // TODO: Team will implement validation and database save
-        Console.WriteLine($"Submitting property: {propertyTitle}");
+        // Validate required fields
+        if (string.IsNullOrWhiteSpace(propertyTitle) || 
+            string.IsNullOrWhiteSpace(propertyDescription) ||
+            string.IsNullOrWhiteSpace(propertyLocation) ||
+            string.IsNullOrWhiteSpace(propertyType) ||
+            minPrice <= 0)
+        {
+            errorMessage = "Please fill in all required fields";
+            return;
+        }
+        
+        // Create new auction with Pending status
+        var auction = new Auction
+        {
+            Title = propertyTitle,
+            Description = propertyDescription,
+            Location = propertyLocation,
+            Category = propertyType.ToLower(), 
+            StartingPrice = minPrice,
+            CurrentHighestBid = minPrice,
+            StartTime = startDate,
+            EndTime = endDate,
+            Status = AuctionStatus.Pending // Needs admin approval
+        };
+        
+        // Submit to AuctionService (adds to BST with Pending status)
+        int auctionId = AuctionService.SubmitAuction(auction);
+        
+        Console.WriteLine($"Submitted property '{propertyTitle}' as auction #{auctionId} (Status: Pending)");
+        
+        // Show success message
         showSuccessMessage = true;
+        errorMessage = "";
+        
+        // Clear form after 2 seconds and redirect
+        Task.Delay(2000).ContinueWith(_ => 
+        {
+            InvokeAsync(() =>
+            {
+                ClearForm();
+                Navigation.NavigateTo("/");
+            });
+        });
+    }
+    
+    private void ClearForm()
+    {
+        propertyTitle = "";
+        propertyDescription = "";
+        propertyLocation = "";
+        propertyType = "";
+        minPrice = 0;
+        reservePrice = null;
+        organisationName = "";
+        contactName = "";
+        contactEmail = "";
+        contactPhone = "";
+        startDate = DateTime.Now;
+        endDate = DateTime.Now.AddDays(7);
+        uploadedImages.Clear();
+        showSuccessMessage = false;
     }
 
     private void Cancel()
     {
-        Console.WriteLine("Cancelled");
+        Navigation.NavigateTo("/");
     }
 
     private void NavigateHome()
     {
-        Console.WriteLine("Navigate home");
+        Navigation.NavigateTo("/");
     }
 }

@@ -155,7 +155,7 @@
     protected override void OnInitialized()
     {
         // Load auctions from BST via AuctionService
-        allAuctions = AuctionService.GetAll();
+        allAuctions = AuctionService.GetActive();
         filteredAuctions = allAuctions;
     }
 
