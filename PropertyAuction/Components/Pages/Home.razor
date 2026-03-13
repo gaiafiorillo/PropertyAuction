@@ -5,7 +5,64 @@
 @inject AuctionService AuctionService
 @inject BidService BidService
 
+
 <PageTitle>Property Auction Platform</PageTitle>
+
+<!-- Bid Modal Overlay -->
+@if (showBidModal && selectedAuction != null)
+{
+    <div class="modal-overlay" @onclick="CloseBidModal">
+        <div class="modal-card" @onclick:stopPropagation="true">
+
+            <div class="modal-header">
+                <div>
+                    <p class="modal-subtitle">Placing bid on</p>
+                    <h3 class="modal-title">@selectedAuction.Title</h3>
+                </div>
+                <button class="modal-close" @onclick="CloseBidModal">&#x2715;</button>
+            </div>
+
+            <div class="modal-stats">
+                <div class="modal-stat">
+                    <span class="stat-label">Current highest bid</span>
+                    <span class="stat-value">£@selectedAuction.CurrentHighestBid.ToString("N0")</span>
+                </div>
+                <div class="modal-stat">
+                    <span class="stat-label">Total bids</span>
+                    <span class="stat-value">@GetBidCount(selectedAuction.AuctionId) bids</span>
+                </div>
+            </div>
+
+            <div class="modal-input-group">
+                <label class="modal-label">Your bid amount (£)</label>
+                <div class="modal-input-wrapper">
+                    <span class="modal-currency">£</span>
+                    <input type="number"
+                           class="modal-input"
+                           placeholder="@((selectedAuction.CurrentHighestBid + 1000).ToString("N0"))"
+                           @bind="bidAmount"
+                           @bind:event="oninput" />
+                </div>
+                <p class="modal-hint">Must be higher than £@selectedAuction.CurrentHighestBid.ToString("N0")</p>
+            </div>
+
+            @if (!string.IsNullOrEmpty(bidMessage))
+            {
+                <div class="modal-message @(bidSuccess ? "modal-message--success" : "modal-message--error")">
+                    @bidMessage
+                </div>
+            }
+
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn--cancel" @onclick="CloseBidModal">Cancel</button>
+                <button class="modal-btn modal-btn--confirm" @onclick="ConfirmBid" disabled="@isSubmitting">
+                    @(isSubmitting ? "Placing..." : "Confirm bid")
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
 
 <!-- Header -->
 <div class="site-header">
@@ -14,14 +71,12 @@
     </button>
     <h1 class="site-title">Property Auction</h1>
     <a href="/submit" class="header-link">Sell properties for organisations</a>
-    <button class="icon-btn" @onclick="NavigateToProfile">
-    </button>
+    <button class="icon-btn" @onclick="NavigateToProfile"></button>
 </div>
 
 <!-- Filter Search Section -->
 <div class="filter-section">
     <h2>Filter search</h2>
-    
     <div class="filter-container">
         <div class="filter-item">
             <label>Location</label>
@@ -32,7 +87,6 @@
                 <option value="Birmingham">Birmingham</option>
             </select>
         </div>
-
         <div class="filter-item">
             <label>Property type</label>
             <select @bind="selectedCategory" class="filter-input">
@@ -42,27 +96,22 @@
                 <option value="shops">Shops</option>
             </select>
         </div>
-
         <div class="filter-item">
             <label>Min price</label>
             <input type="number" @bind="minPrice" placeholder="5000" class="filter-input" />
         </div>
-
         <div class="filter-item">
             <label>Max price</label>
             <input type="number" @bind="maxPrice" placeholder="1000000" class="filter-input" />
         </div>
-
-        <button class="update-btn" @onclick="UpdatePreferences">
-            Update preferences
-        </button>
+        <button class="update-btn" @onclick="UpdatePreferences">Update preferences</button>
     </div>
 </div>
 
 <!-- Properties Section -->
 <div class="properties-section">
     <h2>Properties for auction (@filteredAuctions.Count)</h2>
-    
+
     @if (!filteredAuctions.Any())
     {
         <div class="empty-state">
@@ -80,7 +129,6 @@
                         <span class="image-icon">🏠</span>
                         <p>@auction.Category</p>
                     </div>
-                    
                     <div class="card-header">
                         <div class="property-info">
                             <h3 class="property-title">@auction.Title</h3>
@@ -92,25 +140,19 @@
                             </svg>
                         </button>
                     </div>
-                    
-                    <p class="property-description">
-                        @auction.Description
-                    </p>
-                    
+                    <p class="property-description">@auction.Description</p>
                     <div class="property-details">
                         <div class="price-section">
                             <span class="current-bid-label">Current Bid</span>
                             <p class="property-price">£@auction.CurrentHighestBid.ToString("N0")</p>
-                            <span class="bid-count">@GetBidCount(auction.AuctionId) bids</span> 
-
+                            <span class="bid-count">@GetBidCount(auction.AuctionId) bids</span>
                         </div>
                         <div class="time-left">
                             <span class="time-left-label">Time left</span>
                             <p class="time-remaining">@GetTimeRemaining(auction.EndTime)</p>
                         </div>
                     </div>
-                    
-                    <button class="bid-btn" @onclick="() => PlaceBid(auction.AuctionId)">
+                    <button class="bid-btn" @onclick="() => OpenBidModal(auction)">
                         Place Bid
                     </button>
                 </div>
@@ -135,18 +177,68 @@
 </footer>
 
 @code {
-    //getbid ocunt
-    private int GetBidCount(int auctionId)
+    
+    
+    
+
+    // ── Modal state ───────────────────────────────────────────────
+    private bool showBidModal = false;
+    private Auction? selectedAuction = null;
+    private decimal? bidAmount = null;
+    private string bidMessage = "";
+    private bool bidSuccess = false;
+    private bool isSubmitting = false;
+
+    private void OpenBidModal(Auction auction)
     {
-        return BidService.GetBidCount(auctionId);
+        selectedAuction = auction;
+        bidAmount = null;
+        bidMessage = "";
+        bidSuccess = false;
+        showBidModal = true;
     }
-    // All auctions from BST
+
+    private void CloseBidModal()
+    {
+        showBidModal = false;
+        selectedAuction = null;
+        bidMessage = "";
+    }
+
+    private void ConfirmBid()
+    {
+        if (selectedAuction == null) return;
+
+        if (bidAmount == null || bidAmount <= 0)
+        {
+            bidMessage = "Please enter a bid amount.";
+            bidSuccess = false;
+            return;
+        }
+
+        isSubmitting = true;
+
+        // TODO: replace hardcoded bidderId with real session user ID once login is implemented
+        int bidderId = 1;
+
+        var (success, message) = BidService.PlaceBid(selectedAuction.AuctionId, bidderId, bidAmount.Value);
+
+        bidMessage = message;
+        bidSuccess = success;
+        isSubmitting = false;
+
+        if (success)
+        {
+            // Refresh the card's displayed bid count and price
+            StateHasChanged();
+        }
+    }
+
+
+    private int GetBidCount(int auctionId) => BidService.GetBidCount(auctionId);
+
     private List<Auction> allAuctions = new();
-    
-    // Filtered auctions to display
     private List<Auction> filteredAuctions = new();
-    
-    // Filter values
     private string selectedLocation = "";
     private string selectedCategory = "";
     private decimal? minPrice;
@@ -154,50 +246,29 @@
 
     protected override void OnInitialized()
     {
-        // Load auctions from BST via AuctionService
         allAuctions = AuctionService.GetActive();
         filteredAuctions = allAuctions;
     }
 
     private void UpdatePreferences()
     {
-        // Start with all auctions
         filteredAuctions = allAuctions;
-        
-        // Filter by location
+
         if (!string.IsNullOrEmpty(selectedLocation))
-        {
-            filteredAuctions = filteredAuctions
-                .Where(a => a.Location == selectedLocation)
-                .ToList();
-        }
-        
-        // Filter by category
+            filteredAuctions = filteredAuctions.Where(a => a.Location == selectedLocation).ToList();
+
         if (!string.IsNullOrEmpty(selectedCategory))
-        {
-            filteredAuctions = filteredAuctions
-                .Where(a => a.Category == selectedCategory)
-                .ToList();
-        }
-        
-        // Filter by min price
+            filteredAuctions = filteredAuctions.Where(a => a.Category == selectedCategory).ToList();
+
         if (minPrice.HasValue)
-        {
-            filteredAuctions = filteredAuctions
-                .Where(a => a.CurrentHighestBid >= minPrice.Value)
-                .ToList();
-        }
-        
-        // Filter by max price
+            filteredAuctions = filteredAuctions.Where(a => a.CurrentHighestBid >= minPrice.Value).ToList();
+
         if (maxPrice.HasValue)
-        {
-            filteredAuctions = filteredAuctions
-                .Where(a => a.CurrentHighestBid <= maxPrice.Value)
-                .ToList();
-        }
-        StateHasChanged();  
+            filteredAuctions = filteredAuctions.Where(a => a.CurrentHighestBid <= maxPrice.Value).ToList();
+
+        StateHasChanged();
     }
-    
+
     private void ClearFilters()
     {
         selectedLocation = "";
@@ -210,38 +281,12 @@
     private string GetTimeRemaining(DateTime endTime)
     {
         var timeLeft = endTime - DateTime.Now;
-        
-        if (timeLeft.TotalSeconds <= 0)
-        {
-            return "Ended";
-        }
-        
-        if (timeLeft.TotalDays >= 1)
-        {
-            return $"{(int)timeLeft.TotalDays}d {timeLeft.Hours}h {timeLeft.Minutes}m";
-        }
-        
+        if (timeLeft.TotalSeconds <= 0) return "Ended";
+        if (timeLeft.TotalDays >= 1) return $"{(int)timeLeft.TotalDays}d {timeLeft.Hours}h {timeLeft.Minutes}m";
         return $"{timeLeft.Hours}h {timeLeft.Minutes}m";
     }
 
-    private void NavigateHome()
-    {
-        Console.WriteLine("Navigate home");
-    }
-
-    private void NavigateToProfile()
-    {
-        Console.WriteLine("Navigate to profile");
-    }
-
-    private void ToggleBookmark(int auctionId)
-    {
-        Console.WriteLine($"Toggled bookmark for auction {auctionId}");
-    }
-
-    private void PlaceBid(int auctionId)
-    {
-        Console.WriteLine($"Place bid for auction {auctionId}");
-    }
-    
+    private void NavigateHome() { }
+    private void NavigateToProfile() { }
+    private void ToggleBookmark(int auctionId) { }
 }
