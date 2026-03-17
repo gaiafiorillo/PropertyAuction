@@ -1,0 +1,189 @@
+@rendermode InteractiveServer
+@using System.Text
+@using System.Text.Json
+@inject IConfiguration Configuration
+
+<div class="chat-agent @(Floating ? "chat-agent--floating" : "chat-agent--inline")">
+    @if (!isOpen)
+    {
+        <button class="chat-toggle-btn" @onclick="ToggleChat">
+            <span>💬</span>
+            <span class="chat-toggle-label">Ask our AI assistant</span>
+        </button>
+    }
+    else
+    {
+        <div class="chat-window">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <span class="chat-header-icon">🤖</span>
+                    <div>
+                        <p class="chat-header-title">Property Auction Assistant</p>
+                        <p class="chat-header-subtitle">Ask me anything about the platform</p>
+                    </div>
+                </div>
+                <button class="chat-close-btn" @onclick="ToggleChat">&#x2715;</button>
+            </div>
+
+            <div class="chat-messages">
+                @foreach (var message in messages)
+                {
+                    <div class="chat-message chat-message--@message.Role">
+                        <div class="chat-bubble">@message.Content</div>
+                    </div>
+                }
+                @if (isLoading)
+                {
+                    <div class="chat-message chat-message--assistant">
+                        <div class="chat-bubble chat-bubble--loading">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text"
+                       class="chat-input"
+                       placeholder="Ask about bidding, properties..."
+                       @bind="userInput"
+                       @bind:event="oninput"
+                       @onkeydown="HandleKeyDown"
+                       disabled="@isLoading" />
+                <button class="chat-send-btn" @onclick="SendMessage" disabled="@isLoading">
+                    ➤
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public bool Floating { get; set; } = true;
+
+    private bool isOpen = false;
+    private bool isLoading = false;
+    private string userInput = "";
+
+    private List<ChatMessage> messages = new()
+    {
+        new ChatMessage("assistant", "Hi! I can help you with bidding, submitting properties, or anything about how the platform works. What would you like to know?")
+    };
+
+    private void ToggleChat() => isOpen = !isOpen;
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(userInput))
+            await SendMessage();
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(userInput) || isLoading) return;
+
+        var userMessage = userInput.Trim();
+        userInput = "";
+        messages.Add(new ChatMessage("user", userMessage));
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var reply = await CallProxy(userMessage);
+            messages.Add(new ChatMessage("assistant", reply));
+        }
+        catch (Exception ex)
+        {
+            messages.Add(new ChatMessage("assistant", "Sorry, I'm having trouble connecting right now. Please try again shortly."));
+            Console.WriteLine($"Proxy error: {ex.Message}");
+        }
+
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task<string> CallProxy(string userMessage)
+    {
+        var proxyUrl = Configuration["OpenAI:ProxyUrl"];
+
+        var requestBody = new
+        {
+            model = "gpt-4o-mini",
+            max_tokens = 500,
+            messages = new object[]
+            {
+                new { role = "system", content = GetSystemPrompt() }
+            }.Concat(messages.TakeLast(6)
+                .Select(m => (object)new { role = m.Role, content = m.Content }))
+             .ToArray()
+        };
+
+        using var http = new HttpClient();
+        var json = JsonSerializer.Serialize(new { Body = requestBody });
+
+        var response = await http.PostAsync(
+            $"{proxyUrl}/chat",
+            new StringContent(json, Encoding.UTF8, "application/json")
+        );
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+        var parsed = JsonDocument.Parse(responseBody);
+
+        return parsed.RootElement
+            .GetProperty("choices")[0]
+            .GetProperty("message")
+            .GetProperty("content")
+            .GetString() ?? "Sorry, I couldn't generate a response.";
+    }
+
+    private string GetSystemPrompt() => """
+        You are a helpful assistant for Property Auction, a UK based online property auction platform.
+
+        ABOUT THE PLATFORM:
+        Property Auction is a digital marketplace where organisations can list properties for competitive auction.
+        It is designed for companies liquidating assets such as commercial buildings, residential properties,
+        industrial units, and land. The platform connects sellers with serious buyers through a transparent,
+        time limited bidding process.
+
+        HOW BIDDING WORKS:
+        - Browse all active property listings on the home page
+        - Use filters to narrow by location (London, Manchester, Birmingham), property type (houses, flats, shops), and price range
+        - Click "Place Bid" on any listing to open the bid modal
+        - Your bid must exceed the current highest bid
+        - The live countdown timer shows how long remains on each auction
+        - When the timer reaches zero, the highest bidder wins
+        - All bids are final and legally binding once placed
+
+        HOW TO SUBMIT A PROPERTY:
+        - Organisations can submit properties via the Submit page
+        - Fill in the property title, description, location, type, starting price, and auction duration
+        - Submissions go to the admin team for review
+        - Admin can approve or reject each submission
+        - Approved listings appear immediately on the live home feed
+        - Suitable for liquidation sales, estate sales, commercial offloading, and surplus asset disposal
+
+        TERMS AND CONDITIONS SUMMARY:
+        - All bids placed are legally binding
+        - Bids cannot be retracted once placed
+        - The platform acts as an intermediary and does not own any listed properties
+        - Users are responsible for the security of their accounts
+        - Personal data is processed in accordance with UK data protection law and not sold to third parties
+        - The platform is not liable for inaccurate listing information provided by sellers
+
+        FILTERING AND SEARCH:
+        - Filter by location: London, Manchester, Birmingham
+        - Filter by property type: houses, flats, shops
+        - Filter by minimum and maximum price
+        - Click "Update preferences" to apply filters
+        - Click "Clear filters" to reset
+
+
+        Keep all answers concise, friendly and professional.
+        If asked something completely unrelated to the platform, politely say you can only help with property auction queries.
+        """;
+
+    private record ChatMessage(string Role, string Content);
+}

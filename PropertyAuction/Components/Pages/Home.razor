@@ -4,6 +4,7 @@
 @using PropertyAuction.Services.Services
 @inject AuctionService AuctionService
 @inject BidService BidService
+@using PropertyAuction.Components.Shared
 @implements IDisposable
 
 
@@ -187,6 +188,7 @@
             <a href="/contact">Contact Us</a>
         </div>
     </div>
+    <ChatAgent Floating="true" />
 </footer>
 
 @code {

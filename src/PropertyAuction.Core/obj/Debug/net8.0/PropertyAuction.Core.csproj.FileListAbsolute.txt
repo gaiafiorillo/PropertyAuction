@@ -1,0 +1,11 @@
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/bin/Debug/net8.0/PropertyAuction.Core.deps.json
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/bin/Debug/net8.0/PropertyAuction.Core.dll
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/bin/Debug/net8.0/PropertyAuction.Core.pdb
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/obj/Debug/net8.0/PropertyAuction.Core.GeneratedMSBuildEditorConfig.editorconfig
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/obj/Debug/net8.0/PropertyAuction.Core.AssemblyInfoInputs.cache
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/obj/Debug/net8.0/PropertyAuction.Core.AssemblyInfo.cs
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/obj/Debug/net8.0/PropertyAuction.Core.csproj.CoreCompileInputs.cache
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/obj/Debug/net8.0/PropertyAuction.Core.dll
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/obj/Debug/net8.0/refint/PropertyAuction.Core.dll
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/obj/Debug/net8.0/PropertyAuction.Core.pdb
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction.Core/obj/Debug/net8.0/ref/PropertyAuction.Core.dll
