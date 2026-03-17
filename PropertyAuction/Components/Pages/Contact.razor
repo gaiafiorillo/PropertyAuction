@@ -1,0 +1,105 @@
+@page "/contact"
+@rendermode InteractiveServer
+
+<PageTitle>Contact Us - Property Auction</PageTitle>
+
+<div class="site-header">
+    <button class="icon-btn" onclick="window.location='/'">
+        <span class="icon">🏠</span>
+    </button>
+    <h1 class="site-title">Property Auction</h1>
+    <a href="/submit" class="header-link">Sell properties for organisations</a>
+</div>
+
+<div class="static-container">
+    <div class="static-content">
+        <h1>Contact Us</h1>
+        <p class="static-lead">Have a question or need help? Get in touch with our team</p>
+
+        <div class="contact-grid">
+            <div class="static-section">
+                <h2>Send a Message</h2>
+                <div class="contact-form">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" @bind="contactName" class="form-input" placeholder="John Smith" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" @bind="contactEmail" class="form-input" placeholder="john@example.com" />
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select @bind="contactSubject" class="form-input">
+                            <option value="">Select a subject</option>
+                            <option value="bidding">Question about bidding</option>
+                            <option value="listing">Submitting a property</option>
+                            <option value="account">Account issue</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea @bind="contactMessage" class="form-textarea" rows="5" 
+                                  placeholder="How can we help you?"></textarea>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(formMessage))
+                    {
+                        <div class="modal-message @(formSuccess ? "modal-message--success" : "modal-message--error")">
+                            @formMessage
+                        </div>
+                    }
+
+                    <button class="btn-submit" @onclick="SubmitContact">Send Message</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>About</h3>
+            <a href="/about">About Us</a>
+            <a href="/terms">Terms & Conditions</a>
+        </div>
+        <div class="footer-section">
+            <h3>Contact</h3>
+            <a href="/contact">Contact Us</a>
+        </div>
+    </div>
+</footer>
+
+@code {
+    private string contactName = "";
+    private string contactEmail = "";
+    private string contactSubject = "";
+    private string contactMessage = "";
+    private string formMessage = "";
+    private bool formSuccess = false;
+
+    private void SubmitContact()
+    {
+        if (string.IsNullOrWhiteSpace(contactName) ||
+            string.IsNullOrWhiteSpace(contactEmail) ||
+            string.IsNullOrWhiteSpace(contactMessage))
+        {
+            formMessage = "Please fill in all required fields.";
+            formSuccess = false;
+            return;
+        }
+
+        // TODO: wire to Support_Enquiries table in DB when ready ?
+        Console.WriteLine($"Contact form submitted by {contactName} ({contactEmail}): {contactMessage}");
+        formMessage = "Message sent! We'll get back to you within 24 hours.";
+        formSuccess = true;
+
+        contactName = "";
+        contactEmail = "";
+        contactSubject = "";
+        contactMessage = "";
+    }
+}
