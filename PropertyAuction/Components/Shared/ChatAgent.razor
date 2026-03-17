@@ -1,6 +1,7 @@
 @rendermode InteractiveServer
 @using System.Text
 @using System.Text.Json
+@using Microsoft.AspNetCore.Components
 @inject IConfiguration Configuration
 
 <div class="chat-agent @(Floating ? "chat-agent--floating" : "chat-agent--inline")">
@@ -29,8 +30,7 @@
                 @foreach (var message in messages)
                 {
                     <div class="chat-message chat-message--@message.Role">
-                        <div class="chat-bubble">@message.Content</div>
-                    </div>
+                        <div class="chat-bubble">@FormatMessage(message.Content)</div>                    </div>
                 }
                 @if (isLoading)
                 {
@@ -141,7 +141,19 @@
             .GetProperty("content")
             .GetString() ?? "Sorry, I couldn't generate a response.";
     }
-
+    private MarkupString FormatMessage(string content)
+    {
+// Convert **text** to <strong>text</strong>
+        var formatted = System.Text.RegularExpressions.Regex.Replace(
+            content, 
+            @"\*\*(.*?)\*\*", 
+            "<strong>$1</strong>"
+        );
+// Convert newlines to <br>
+        formatted = formatted.Replace("\n", "<br>");
+    
+        return new MarkupString(formatted);
+    }
     private string GetSystemPrompt() => """
         You are a helpful assistant for Property Auction, a UK based online property auction platform.
 
@@ -189,4 +201,6 @@
         """;
 
     private record ChatMessage(string Role, string Content);
+    
+    
 }
