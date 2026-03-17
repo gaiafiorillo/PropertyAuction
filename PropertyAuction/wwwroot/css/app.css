@@ -1027,3 +1027,41 @@ body {
     overflow: visible !important;
     isolation: isolate;
 }
+
+/* buttons on submit form */
+.btn-cancel {
+    padding: 12px 30px;
+    border: 1px solid #bdc3c7;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    background: white;
+    color: #2c3e50;
+    transition: all 0.3s;
+}
+
+.btn-cancel:hover {
+    background: #ecf0f1;
+}
+
+.btn-submit {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    background: #3498db;
+    color: white;
+    transition: all 0.3s;
+}
+
+.btn-submit:hover {
+    background: #2980b9;
+}
+
+.btn-submit:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+}
