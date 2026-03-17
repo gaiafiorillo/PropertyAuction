@@ -135,4 +135,4 @@
 /home/gaia/RiderProjects/PropertyAuction/PropertyAuction/obj/Debug/net10.0/compressed/or611vo4jg-{0}-ijwdjpyb4d-ijwdjpyb4d.gz
 /home/gaia/RiderProjects/PropertyAuction/PropertyAuction/obj/Debug/net10.0/compressed/rtm3fpg38f-{0}-mgww215af1-mgww215af1.gz
 /home/gaia/RiderProjects/PropertyAuction/PropertyAuction/obj/Debug/net10.0/compressed/5xtsia23kk-{0}-dy8h75y8gn-dy8h75y8gn.gz
-/home/gaia/RiderProjects/PropertyAuction/PropertyAuction/obj/Debug/net10.0/compressed/b4ors47857-{0}-aqcqahsa7z-aqcqahsa7z.gz
+/home/gaia/RiderProjects/PropertyAuction/PropertyAuction/obj/Debug/net10.0/compressed/b4ors47857-{0}-mq7jvcigpx-mq7jvcigpx.gz

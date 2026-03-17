@@ -109,6 +109,7 @@
     {
         var proxyUrl = Configuration["OpenAI:ProxyUrl"];
 
+
         var requestBody = new
         {
             model = "gpt-4o-mini",
@@ -130,6 +131,8 @@
         );
 
         var responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine($"Proxy response: {responseBody}"); // temp debug
+
         var parsed = JsonDocument.Parse(responseBody);
 
         return parsed.RootElement

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PropertyAuction.Security")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+36a062ad2591c315999e5771596bd846f83501cf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4e55d57e8c94cce4e3b1be32878ba1f371a6931d")]
 [assembly: System.Reflection.AssemblyProductAttribute("PropertyAuction.Security")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PropertyAuction.Security")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
