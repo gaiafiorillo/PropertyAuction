@@ -1,0 +1,145 @@
+@page "/about"
+
+<PageTitle>About Us - Property Auction</PageTitle>
+
+<div class="site-header">
+    <button class="icon-btn" onclick="window.location='/'">
+        <span class="icon">🏠</span>
+    </button>
+    <h1 class="site-title">Property Auction</h1>
+    <a href="/submit" class="header-link">Sell properties for organisations</a>
+</div>
+
+<div class="static-container">
+    <div class="static-content">
+
+        <h1>About </h1>
+        <p class="static-lead">
+            A student project built at Middlesex University as part of CST2550 
+            demonstrating custom data structures, auction logic, and a full stack .NET web application.
+        </p>
+
+        <!-- Team Section -->
+        <div class="static-section">
+            <h2>the team</h2>
+            <div class="team-grid">
+                <div class="team-card">
+                    <p class="team-name">Gaia</p>
+                </div>
+                <div class="team-card">
+                    <p class="team-name">Lee</p>
+                </div>
+                <div class="team-card">
+                    <p class="team-name">Sell</p>
+                </div>
+                <div class="team-card">
+                    <p class="team-name">Elysia</p>
+                </div>
+                <div class="team-card">
+                    <p class="team-name">khalid</p>
+                
+            </div>
+        </div>
+
+        <!-- How Bidding Works -->
+        <div class="static-section">
+            <h2>How the bidding Works</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <h3>Browse</h3>
+                    <p>View all active property auctions on the home feed. Filter by location, type, or price.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <h3>Register</h3>
+                    <p>Create an account to start placing bids on properties you're interested in.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <h3>Bid</h3>
+                    <p>Place a bid higher than the current highest. Each new bid updates the live price instantly.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">4</span>
+                    <h3>Win</h3>
+                    <p>The highest bidder when the auction timer reaches zero wins the property.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Section -->
+        <div class="static-section">
+            <h2>Technology</h2>
+            <p>
+                Built on <strong>.NET 10</strong> with Blazor Server, the platform is powered by 
+                custom built data structures designed for performance.
+                All auctions are stored in a custom BST
+                User lookups use a custom hash table with separate chaining
+                Bid history for each auction is stored in a custom linked list
+            </p>
+            </div>
+        </div>
+
+        <!-- For Organisations Section -->
+        <div class="static-section">
+            <h2>For Organisations</h2>
+            <p>
+                Property Auction is designed for organisations looking to liquidate assets quickly 
+                and transparently. Whether you're a company selling surplus property, an estate 
+                handling inherited assets, or a developer offloading commercial space ..
+            </p>
+            <p>
+                Simply submit your property through our <a href="/submit" class="inline-link">submission form</a>. 
+                Our admin team will review the listing and approve it for the live feed. Once approved, 
+                your property appears on the home page where buyers can filter by location, price, 
+                and property type and place bids in real time.
+            </p>
+            <div class="org-steps">
+                <div class="org-step">
+                    <span class="org-step-icon">📋</span>
+                    <div>
+                        <p class="org-step-title">Submit your property</p>
+                        <p class="org-step-desc">Fill in property details, set a starting price and auction duration</p>
+                    </div>
+                </div>
+                <div class="org-step">
+                    <span class="org-step-icon">🔍</span>
+                    <div>
+                        <p class="org-step-title">Admin review</p>
+                        <p class="org-step-desc">Our team reviews the submission and approves or rejects it</p>
+                    </div>
+                </div>
+                <div class="org-step">
+                    <span class="org-step-icon">🏠</span>
+                    <div>
+                        <p class="org-step-title">Goes live</p>
+                        <p class="org-step-desc">Approved listings appear on the home feed immediately</p>
+                    </div>
+                </div>
+                <div class="org-step">
+                    <span class="org-step-icon">🏆</span>
+                    <div>
+                        <p class="org-step-title">Auction ends</p>
+                        <p class="org-step-desc">Highest bidder wins when the countdown reaches zero</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>About</h3>
+            <a href="/about">About Us</a>
+            <a href="/terms">Terms & Conditions</a>
+        </div>
+        <div class="footer-section">
+            <h3>Contact</h3>
+            <a href="/contact">Contact Us</a>
+        </div>
+    </div>
+</footer>
