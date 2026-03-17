@@ -4,6 +4,7 @@
 @using PropertyAuction.Services.Services
 @inject AuctionService AuctionService
 @inject BidService BidService
+@implements IDisposable
 
 
 <PageTitle>Property Auction Platform</PageTitle>
@@ -71,8 +72,10 @@
     </button>
     <h1 class="site-title">Property Auction</h1>
     <a href="/submit" class="header-link">Sell properties for organisations</a>
-    <button class="icon-btn" @onclick="NavigateToProfile"></button>
+    <button class="icon-btn" @onclick="NavigateToProfile">
         <span class="icon">👤</span>
+    </button>
+    
 </div>
 
 <!-- Filter Search Section -->
@@ -153,9 +156,18 @@
                             <p class="time-remaining">@GetTimeRemaining(auction.EndTime)</p>
                         </div>
                     </div>
-                    <button class="bid-btn" @onclick="() => OpenBidModal(auction)">
-                        Place Bid
-                    </button>
+                    @if (auction.IsActive())
+                    {
+                        <button class="bid-btn" @onclick="() => OpenBidModal(auction)">
+                            Place Bid
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="bid-btn" disabled style="background:#bdc3c7; cursor:not-allowed;">
+                            Auction Ended
+                        </button>
+                    }
                 </div>
             }
         </div>
@@ -245,12 +257,30 @@
     private decimal? minPrice;
     private decimal? maxPrice;
 
+    private System.Threading.Timer? _timer;
+
+    //bid timer
     protected override void OnInitialized()
     {
         allAuctions = AuctionService.GetActive();
         filteredAuctions = allAuctions;
+
+        // Tick every second to update countdowns
+        _timer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                filteredAuctions = allAuctions.Where(a =>
+                    a.Status == AuctionStatus.Active).ToList();
+                StateHasChanged();
+            });
+        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
     }
 
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
     private void UpdatePreferences()
     {
         filteredAuctions = allAuctions;
