@@ -1,0 +1,104 @@
+@rendermode InteractiveServer
+@using PropertyAuction.Core.Models
+@using PropertyAuction.Services.Services
+@inject BidService BidService
+
+@if (IsVisible && Auction != null)
+{
+    <div class="modal-overlay" @onclick="HandleClose">
+        <div class="modal-card" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <div>
+                    <p class="modal-subtitle">Placing bid on</p>
+                    <h3 class="modal-title">@Auction.Title</h3>
+                </div>
+                <button class="modal-close" @onclick="HandleClose">&#x2715;</button>
+            </div>
+            <div class="modal-stats">
+                <div class="modal-stat">
+                    <span class="stat-label">Current highest bid</span>
+                    <span class="stat-value">£@Auction.CurrentHighestBid.ToString("N0")</span>
+                </div>
+                <div class="modal-stat">
+                    <span class="stat-label">Total bids</span>
+                    <span class="stat-value">@BidService.GetBidCount(Auction.AuctionId) bids</span>
+                </div>
+            </div>
+            <div class="modal-input-group">
+                <label class="modal-label">Your bid amount (£)</label>
+                <div class="modal-input-wrapper">
+                    <span class="modal-currency">£</span>
+                    <input type="number"
+                           class="modal-input"
+                           placeholder="@((Auction.CurrentHighestBid + 1000).ToString("N0"))"
+                           @bind="bidAmount"
+                           @bind:event="oninput" />
+                </div>
+                <p class="modal-hint">Must be higher than £@Auction.CurrentHighestBid.ToString("N0")</p>
+            </div>
+            @if (!string.IsNullOrEmpty(bidMessage))
+            {
+                <div class="modal-message @(bidSuccess ? "modal-message--success" : "modal-message--error")">
+                    @bidMessage
+                </div>
+            }
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn--cancel" @onclick="HandleClose">Cancel</button>
+                <button class="modal-btn modal-btn--confirm" @onclick="ConfirmBid" disabled="@isSubmitting">
+                    @(isSubmitting ? "Placing..." : "Confirm bid")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Auction? Auction { get; set; }
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnBidPlaced { get; set; }
+
+    private decimal? bidAmount = null;
+    private string bidMessage = "";
+    private bool bidSuccess = false;
+    private bool isSubmitting = false;
+
+    private int _lastAuctionId = -1;
+
+    protected override void OnParametersSet()
+    {
+        if (Auction != null && Auction.AuctionId != _lastAuctionId)
+        {
+            _lastAuctionId = Auction.AuctionId;
+            bidAmount = null;
+            bidMessage = "";
+            bidSuccess = false;
+        }
+    }
+
+    private async Task HandleClose()
+    {
+        bidAmount = null;
+        bidMessage = "";
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task ConfirmBid()
+    {
+        if (Auction == null) return;
+        if (bidAmount == null || bidAmount <= 0)
+        {
+            bidMessage = "Please enter a bid amount.";
+            bidSuccess = false;
+            return;
+        }
+        isSubmitting = true;
+        // TODO: replace hardcoded bidderId with real session user ID once login is implemented
+        int bidderId = 1;
+        var (success, message) = BidService.PlaceBid(Auction.AuctionId, bidderId, bidAmount.Value);
+        bidMessage = message;
+        bidSuccess = success;
+        isSubmitting = false;
+        if (success) await OnBidPlaced.InvokeAsync();
+    }
+}

@@ -1,0 +1,224 @@
+@rendermode InteractiveServer
+@page "/auction/{AuctionId:int}"
+@using PropertyAuction.Core.Models
+@using PropertyAuction.Services.Services
+@using PropertyAuction.Components.Shared
+@inject AuctionService AuctionService
+@inject BidService BidService
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<PageTitle>@(_auction?.Title ?? "Auction Detail") - Property Auction</PageTitle>
+
+<BidModal Auction="_auction"
+          IsVisible="_showBidModal"
+          OnClose="CloseBidModal"
+          OnBidPlaced="StateHasChanged" />
+
+<!-- Header -->
+<div class="site-header">
+    <button class="icon-btn" @onclick='() => Navigation.NavigateTo("/")'>
+        <span class="icon">🏠</span>
+    </button>
+    <h1 class="site-title">Property Auction</h1>
+    <a href="/submit" class="header-link">Sell properties for organisations</a>
+    <button class="icon-btn">
+        <span class="icon">👤</span>
+    </button>
+</div>
+
+@if (_auction == null)
+{
+    <div class="submit-container">
+        <p>Auction not found.</p>
+        <button class="update-btn" @onclick='() => Navigation.NavigateTo("/")'>Back to listings</button>
+    </div>
+}
+else
+{
+    <div class="detail-container">
+
+        <button class="detail-back-btn" @onclick='() => Navigation.NavigateTo("/")'>
+            ← Back to listings
+        </button>
+
+        <div class="detail-layout">
+
+            <!-- Left column -->
+            <div class="detail-left">
+                @if (!string.IsNullOrEmpty(_auction.ImageUrl))
+                {
+                    <img src="@_auction.ImageUrl" class="detail-image" alt="@_auction.Title" />
+                }
+                else
+                {
+                    <div class="property-image-placeholder" style="height:300px;">
+                        <span class="image-icon">🏠</span>
+                    </div>
+                }
+
+                <div class="detail-section">
+                    <h2>About this property</h2>
+                    <p class="detail-description">@_auction.Description</p>
+                </div>
+
+                <div class="detail-section">
+                    <h2>Property details</h2>
+                    <div class="detail-facts">
+                        <div class="detail-fact">
+                            <span class="detail-fact-label">Type</span>
+                            <span class="detail-fact-value">@_auction.Category</span>
+                        </div>
+                        <div class="detail-fact">
+                            <span class="detail-fact-label">Location</span>
+                            <span class="detail-fact-value">@_auction.Location</span>
+                        </div>
+                        @if (_auction.Bedrooms > 0)
+                        {
+                            <div class="detail-fact">
+                                <span class="detail-fact-label">Bedrooms</span>
+                                <span class="detail-fact-value">@_auction.Bedrooms</span>
+                            </div>
+                        }
+                        @if (_auction.Bathrooms > 0)
+                        {
+                            <div class="detail-fact">
+                                <span class="detail-fact-label">Bathrooms</span>
+                                <span class="detail-fact-value">@_auction.Bathrooms</span>
+                            </div>
+                        }
+                        <div class="detail-fact">
+                            <span class="detail-fact-label">Starting price</span>
+                            <span class="detail-fact-value">£@_auction.StartingPrice.ToString("N0")</span>
+                        </div>
+                        <div class="detail-fact">
+                            <span class="detail-fact-label">Auction started</span>
+                            <span class="detail-fact-value">@_auction.StartTime.ToString("dd MMM yyyy")</span>
+                        </div>
+                        <div class="detail-fact">
+                            <span class="detail-fact-label">Auction ends</span>
+                            <span class="detail-fact-value">@_auction.EndTime.ToString("dd MMM yyyy HH:mm")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h2>Important notice</h2>
+                    <p class="detail-notice">
+                        If your bid is successful, you will be contacted by the seller to arrange next steps
+                        including contract exchange and payment. Property Auction acts as an intermediary
+                        platform only and does not handle payments directly.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right column: bidding panel -->
+            <div class="detail-right">
+                <div class="detail-bid-panel">
+                    <h2>Current bid</h2>
+                    <p class="detail-current-bid">£@_auction.CurrentHighestBid.ToString("N0")</p>
+                    <p class="detail-bid-count">@BidService.GetBidCount(_auction.AuctionId) bids placed</p>
+
+                    <div class="detail-timer">
+                        <span class="time-left-label">Time remaining</span>
+                        <p class="time-remaining @(GetTimeRemaining(_auction.EndTime) == "Ended" ? "" : "detail-timer-active")">
+                            @GetTimeRemaining(_auction.EndTime)
+                        </p>
+                    </div>
+
+                    @if (_auction.IsActive())
+                    {
+                        <button class="bid-btn" @onclick="() => _showBidModal = true">
+                            Place Bid
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="bid-btn" disabled style="background:#bdc3c7; cursor:not-allowed;">
+                            Auction Ended
+                        </button>
+                    }
+
+                    @if (_bidHistory.Any())
+                    {
+                        <div class="detail-bid-history">
+                            <h3>Bid history</h3>
+                            @foreach (var bid in _bidHistory.Take(5))
+                            {
+                                <div class="detail-bid-row">
+                                    <span class="detail-bid-amount">£@bid.Amount.ToString("N0")</span>
+                                    <span class="detail-bid-time">@bid.Timestamp.ToString("dd MMM HH:mm")</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>About</h3>
+            <a href="/about">About Us</a>
+            <a href="/terms">Terms & Conditions</a>
+        </div>
+        <div class="footer-section">
+            <h3>Contact</h3>
+            <a href="/contact">Contact Us</a>
+        </div>
+    </div>
+    <ChatAgent Floating="true" />
+</footer>
+
+@code {
+    [Parameter] public int AuctionId { get; set; }
+
+    private Auction? _auction;
+    private List<Bid> _bidHistory = new();
+    private bool _showBidModal;
+    private System.Threading.Timer? _timer;
+
+    protected override void OnInitialized()
+    {
+        LoadAuction();
+
+        _timer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                LoadAuction();
+                StateHasChanged();
+            });
+        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+    }
+
+    private void LoadAuction()
+    {
+        _auction = AuctionService.GetById(AuctionId);
+        if (_auction != null)
+            _bidHistory = BidService.GetBidHistory(AuctionId)
+                .OrderByDescending(b => b.Amount)
+                .ToList();
+    }
+
+    private void CloseBidModal()
+    {
+        _showBidModal = false;
+        LoadAuction();
+        StateHasChanged();
+    }
+
+    private string GetTimeRemaining(DateTime endTime)
+    {
+        var timeLeft = endTime - DateTime.Now;
+        if (timeLeft.TotalSeconds <= 0) return "Ended";
+        if (timeLeft.TotalDays >= 1) return $"{(int)timeLeft.TotalDays}d {timeLeft.Hours}h {timeLeft.Minutes}m {timeLeft.Seconds}s";
+        return $"{timeLeft.Hours}h {timeLeft.Minutes}m {timeLeft.Seconds}s";
+    }
+
+    public void Dispose() => _timer?.Dispose();
+}
