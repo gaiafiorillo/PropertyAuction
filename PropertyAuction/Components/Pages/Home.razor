@@ -7,7 +7,6 @@
 @using PropertyAuction.Components.Shared
 @implements IDisposable
 
-
 <PageTitle>Property Auction Platform</PageTitle>
 
 <!-- Bid Modal Overlay -->
@@ -15,7 +14,6 @@
 {
     <div class="modal-overlay" @onclick="CloseBidModal">
         <div class="modal-card" @onclick:stopPropagation="true">
-
             <div class="modal-header">
                 <div>
                     <p class="modal-subtitle">Placing bid on</p>
@@ -23,7 +21,6 @@
                 </div>
                 <button class="modal-close" @onclick="CloseBidModal">&#x2715;</button>
             </div>
-
             <div class="modal-stats">
                 <div class="modal-stat">
                     <span class="stat-label">Current highest bid</span>
@@ -34,7 +31,6 @@
                     <span class="stat-value">@GetBidCount(selectedAuction.AuctionId) bids</span>
                 </div>
             </div>
-
             <div class="modal-input-group">
                 <label class="modal-label">Your bid amount (£)</label>
                 <div class="modal-input-wrapper">
@@ -47,21 +43,18 @@
                 </div>
                 <p class="modal-hint">Must be higher than £@selectedAuction.CurrentHighestBid.ToString("N0")</p>
             </div>
-
             @if (!string.IsNullOrEmpty(bidMessage))
             {
                 <div class="modal-message @(bidSuccess ? "modal-message--success" : "modal-message--error")">
                     @bidMessage
                 </div>
             }
-
             <div class="modal-actions">
                 <button class="modal-btn modal-btn--cancel" @onclick="CloseBidModal">Cancel</button>
                 <button class="modal-btn modal-btn--confirm" @onclick="ConfirmBid" disabled="@isSubmitting">
                     @(isSubmitting ? "Placing..." : "Confirm bid")
                 </button>
             </div>
-
         </div>
     </div>
 }
@@ -76,7 +69,6 @@
     <button class="icon-btn" @onclick="NavigateToProfile">
         <span class="icon">👤</span>
     </button>
-    
 </div>
 
 <!-- Filter Search Section -->
@@ -85,7 +77,7 @@
     <div class="filter-container">
         <div class="filter-item">
             <label>Location</label>
-            <select @bind="selectedLocation" class="filter-input">
+            <select @bind="stagingLocation" class="filter-input">
                 <option value="">All Locations</option>
                 <option value="London">London</option>
                 <option value="Manchester">Manchester</option>
@@ -94,7 +86,7 @@
         </div>
         <div class="filter-item">
             <label>Property type</label>
-            <select @bind="selectedCategory" class="filter-input">
+            <select @bind="stagingCategory" class="filter-input">
                 <option value="">All Types</option>
                 <option value="houses">Houses</option>
                 <option value="flats">Flats</option>
@@ -102,12 +94,35 @@
             </select>
         </div>
         <div class="filter-item">
-            <label>Min price</label>
-            <input type="number" @bind="minPrice" placeholder="5000" class="filter-input" />
+            <label>Min bedrooms</label>
+            <select @bind="stagingMinBedrooms" class="filter-input">
+                <option value="0">No min</option>
+                <option value="1">1+</option>
+                <option value="2">2+</option>
+                <option value="3">3+</option>
+                <option value="4">4+</option>
+            </select>
         </div>
         <div class="filter-item">
             <label>Max price</label>
-            <input type="number" @bind="maxPrice" placeholder="1000000" class="filter-input" />
+            <select @bind="stagingMaxPrice" class="filter-input">
+                <option value="">Any price</option>
+                <option value="100000">£100,000</option>
+                <option value="200000">£200,000</option>
+                <option value="300000">£300,000</option>
+                <option value="500000">£500,000</option>
+                <option value="750000">£750,000</option>
+                <option value="1000000">£1,000,000</option>
+                <option value="custom">Custom...</option>
+            </select>
+            @if (stagingMaxPrice == "custom")
+            {
+                <input type="number"
+                       @bind="stagingCustomMaxPrice"
+                       placeholder="Enter amount"
+                       class="filter-input"
+                       style="margin-top: 8px;" />
+            }
         </div>
         <button class="update-btn" @onclick="UpdatePreferences">Update preferences</button>
     </div>
@@ -130,10 +145,17 @@
             @foreach (var auction in filteredAuctions)
             {
                 <div class="property-card">
-                    <div class="property-image-placeholder">
-                        <span class="image-icon">🏠</span>
-                        <p>@auction.Category</p>
-                    </div>
+                    @if (!string.IsNullOrEmpty(auction.ImageUrl))
+                    {
+                        <img src="@auction.ImageUrl" class="property-image" alt="@auction.Title" />
+                    }
+                    else
+                    {
+                        <div class="property-image-placeholder">
+                            <span class="image-icon">🏠</span>
+                            <p>@auction.Category</p>
+                        </div>
+                    }
                     <div class="card-header">
                         <div class="property-info">
                             <h3 class="property-title">@auction.Title</h3>
@@ -146,6 +168,19 @@
                         </button>
                     </div>
                     <p class="property-description">@auction.Description</p>
+                    @if (auction.Bedrooms > 0 || auction.Bathrooms > 0)
+                    {
+                        <div class="property-features">
+                            @if (auction.Bedrooms > 0)
+                            {
+                                <span class="feature-badge">🛏 @auction.Bedrooms bed</span>
+                            }
+                            @if (auction.Bathrooms > 0)
+                            {
+                                <span class="feature-badge">🚿 @auction.Bathrooms bath</span>
+                            }
+                        </div>
+                    }
                     <div class="property-details">
                         <div class="price-section">
                             <span class="current-bid-label">Current Bid</span>
@@ -192,11 +227,6 @@
 </footer>
 
 @code {
-    
-    
-    
-
-    // ── Modal state ───────────────────────────────────────────────
     private bool showBidModal = false;
     private Auction? selectedAuction = null;
     private decimal? bidAmount = null;
@@ -223,67 +253,62 @@
     private void ConfirmBid()
     {
         if (selectedAuction == null) return;
-
         if (bidAmount == null || bidAmount <= 0)
         {
             bidMessage = "Please enter a bid amount.";
             bidSuccess = false;
             return;
         }
-
         isSubmitting = true;
-
         // TODO: replace hardcoded bidderId with real session user ID once login is implemented
         int bidderId = 1;
-
         var (success, message) = BidService.PlaceBid(selectedAuction.AuctionId, bidderId, bidAmount.Value);
-
         bidMessage = message;
         bidSuccess = success;
         isSubmitting = false;
-
-        if (success)
-        {
-            // Refresh the card's displayed bid count and price
-            StateHasChanged();
-        }
+        if (success) StateHasChanged();
     }
-
 
     private int GetBidCount(int auctionId) => BidService.GetBidCount(auctionId);
 
-    private List<Auction> allAuctions = new();
-    private List<Auction> filteredAuctions = new();
+    // ── Staging variables (dropdowns, not yet applied) ────────
+    private string stagingLocation = "";
+    private string stagingCategory = "";
+    private int stagingMinBedrooms = 0;
+    private string stagingMaxPrice = "";
+    private decimal? stagingCustomMaxPrice = null;
+
+    // ── Applied variables (actually used for filtering) ───────
     private string selectedLocation = "";
     private string selectedCategory = "";
-    private decimal? minPrice;
+    private int minBedrooms = 0;
     private decimal? maxPrice;
+    private string selectedMaxPrice = "";
+    private decimal? customMaxPrice = null;
 
+    private List<Auction> allAuctions = new();
+    private List<Auction> filteredAuctions = new();
     private System.Threading.Timer? _timer;
 
-    //bid timer
     protected override void OnInitialized()
     {
         allAuctions = AuctionService.GetActive();
         filteredAuctions = allAuctions;
 
-        // Tick every second to update countdowns
         _timer = new System.Threading.Timer(_ =>
         {
             InvokeAsync(() =>
             {
-                filteredAuctions = allAuctions.Where(a =>
-                    a.Status == AuctionStatus.Active).ToList();
+                allAuctions = AuctionService.GetActive();
+                ApplyFilters();
                 StateHasChanged();
             });
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
     }
 
-    public void Dispose()
-    {
-        _timer?.Dispose();
-    }
-    private void UpdatePreferences()
+    public void Dispose() => _timer?.Dispose();
+
+    private void ApplyFilters()
     {
         filteredAuctions = allAuctions;
 
@@ -293,30 +318,54 @@
         if (!string.IsNullOrEmpty(selectedCategory))
             filteredAuctions = filteredAuctions.Where(a => a.Category == selectedCategory).ToList();
 
-        if (minPrice.HasValue)
-            filteredAuctions = filteredAuctions.Where(a => a.CurrentHighestBid >= minPrice.Value).ToList();
+        if (minBedrooms > 0)
+            filteredAuctions = filteredAuctions.Where(a => a.Bedrooms >= minBedrooms).ToList();
 
         if (maxPrice.HasValue)
             filteredAuctions = filteredAuctions.Where(a => a.CurrentHighestBid <= maxPrice.Value).ToList();
+    }
 
+    private void UpdatePreferences()
+    {
+        selectedLocation = stagingLocation;
+        selectedCategory = stagingCategory;
+        minBedrooms = stagingMinBedrooms;
+        selectedMaxPrice = stagingMaxPrice;
+        customMaxPrice = stagingCustomMaxPrice;
+
+        if (selectedMaxPrice == "custom")
+            maxPrice = customMaxPrice;
+        else if (string.IsNullOrEmpty(selectedMaxPrice))
+            maxPrice = null;
+        else
+            maxPrice = decimal.Parse(selectedMaxPrice);
+
+        ApplyFilters();
         StateHasChanged();
     }
 
     private void ClearFilters()
     {
+        stagingLocation = "";
+        stagingCategory = "";
+        stagingMinBedrooms = 0;
+        stagingMaxPrice = "";
+        stagingCustomMaxPrice = null;
         selectedLocation = "";
         selectedCategory = "";
-        minPrice = null;
+        minBedrooms = 0;
         maxPrice = null;
-        filteredAuctions = allAuctions;
+        selectedMaxPrice = "";
+        customMaxPrice = null;
+        ApplyFilters();
     }
 
     private string GetTimeRemaining(DateTime endTime)
     {
         var timeLeft = endTime - DateTime.Now;
         if (timeLeft.TotalSeconds <= 0) return "Ended";
-        if (timeLeft.TotalDays >= 1) return $"{(int)timeLeft.TotalDays}d {timeLeft.Hours}h {timeLeft.Minutes}m";
-        return $"{timeLeft.Hours}h {timeLeft.Minutes}m";
+        if (timeLeft.TotalDays >= 1) return $"{(int)timeLeft.TotalDays}d {timeLeft.Hours}h {timeLeft.Minutes}m {timeLeft.Seconds}s";
+        return $"{timeLeft.Hours}h {timeLeft.Minutes}m {timeLeft.Seconds}s";
     }
 
     private void NavigateHome() { }
