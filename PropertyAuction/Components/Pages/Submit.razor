@@ -53,10 +53,34 @@
                     <label for="propertyType">Property Type *</label>
                     <select id="propertyType" @bind="propertyType" class="form-input" required>
                         <option value="">Select type</option>
-                        <option value="Residential">Residential</option>
-                        <option value="Commercial">Commercial</option>
-                        <option value="Industrial">Industrial</option>
-                        <option value="Land">Land</option>
+                        <option value="houses">Houses</option>
+                        <option value="flats">Flats</option>
+                        <option value="shops">Shops</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bedrooms">Bedrooms</label>
+                    <select id="bedrooms" @bind="bedrooms" class="form-input">
+                        <option value="0">Not applicable</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="bathrooms">Bathrooms</label>
+                    <select id="bathrooms" @bind="bathrooms" class="form-input">
+                        <option value="0">Not applicable</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4+</option>
                     </select>
                 </div>
             </div>
@@ -155,6 +179,13 @@
             <button type="submit" class="btn-submit" @onclick="SubmitProperty">Submit for Approval</button>
         </div>
 
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="modal-message modal-message--error" style="margin-top: 1rem;">
+                @errorMessage
+            </div>
+        }
+
         @if (showSuccessMessage)
         {
             <div class="success-message">
@@ -169,6 +200,8 @@
     private string propertyDescription = "";
     private string propertyLocation = "";
     private string propertyType = "";
+    private int bedrooms = 0;
+    private int bathrooms = 0;
     private decimal minPrice = 0;
     private decimal? reservePrice;
     private string organisationName = "";
@@ -183,7 +216,6 @@
 
     private void HandleImageUpload(ChangeEventArgs e)
     {
-        // TODO: Team will implement actual file upload
         Console.WriteLine("Image upload triggered");
         uploadedImages.Add("sample-image.jpg");
     }
@@ -195,41 +227,37 @@
 
     private void SubmitProperty()
     {
-        // Validate required fields
         if (string.IsNullOrWhiteSpace(propertyTitle) || 
             string.IsNullOrWhiteSpace(propertyDescription) ||
             string.IsNullOrWhiteSpace(propertyLocation) ||
             string.IsNullOrWhiteSpace(propertyType) ||
             minPrice <= 0)
         {
-            errorMessage = "Please fill in all required fields";
+            errorMessage = "Please fill in all required fields.";
             return;
         }
         
-        // Create new auction with Pending status
         var auction = new Auction
         {
             Title = propertyTitle,
             Description = propertyDescription,
             Location = propertyLocation,
-            Category = propertyType.ToLower(), 
+            Category = propertyType.ToLower(),
+            Bedrooms = bedrooms,
+            Bathrooms = bathrooms,
             StartingPrice = minPrice,
             CurrentHighestBid = minPrice,
             StartTime = startDate,
             EndTime = endDate,
-            Status = AuctionStatus.Pending // Needs admin approval
+            Status = AuctionStatus.Pending
         };
         
-        // Submit to AuctionService (adds to BST with Pending status)
         int auctionId = AuctionService.SubmitAuction(auction);
-        
         Console.WriteLine($"Submitted property '{propertyTitle}' as auction #{auctionId} (Status: Pending)");
         
-        // Show success message
         showSuccessMessage = true;
         errorMessage = "";
         
-        // Clear form after 2 seconds and redirect
         Task.Delay(2000).ContinueWith(_ => 
         {
             InvokeAsync(() =>
@@ -246,6 +274,8 @@
         propertyDescription = "";
         propertyLocation = "";
         propertyType = "";
+        bedrooms = 0;
+        bathrooms = 0;
         minPrice = 0;
         reservePrice = null;
         organisationName = "";
@@ -258,13 +288,6 @@
         showSuccessMessage = false;
     }
 
-    private void Cancel()
-    {
-        Navigation.NavigateTo("/");
-    }
-
-    private void NavigateHome()
-    {
-        Navigation.NavigateTo("/");
-    }
+    private void Cancel() => Navigation.NavigateTo("/");
+    private void NavigateHome() => Navigation.NavigateTo("/");
 }
