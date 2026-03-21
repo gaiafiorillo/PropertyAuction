@@ -46,8 +46,9 @@ namespace PropertyAuction.DataStructures.BST
         /// </summary>
         public void Insert(Auction auction)
         {
+            bool isNew = Search(auction.AuctionId) == null;
             root = InsertRecursive(root, auction);
-            size++;
+            if (isNew) size++;
         }
         
         private TreeNode InsertRecursive(TreeNode? node, Auction auction)
