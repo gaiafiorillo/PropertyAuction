@@ -860,6 +860,94 @@ body {
     top: 0.5rem;
 }
 
+/* Login page */
+
+.detail-container{
+    max-width: 350px;
+    margin: 40px auto;
+    text-align:center;
+}
+
+#login-title{
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.detail-box{
+  display: flex;
+  padding: 25px;
+  background-color: white;
+  border: 1px solid #2c3e50;
+  border-radius: 8px;
+  text-align: left;
+  flex-direction: column;
+  gap: 12px;
+  color: #2c3e50;
+  font-size: 18px;
+
+}
+.detail-box input{
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgb(4, 16, 17);
+  border-radius: 4px;
+  background-color: white;
+  font-size: 16px;
+  color: rgb(4, 16, 17);
+}
+
+.detail-box button{
+    width: 100%;
+    margin-top: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.divider {
+    margin-top: 25px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 2px solid rgb(4, 16, 17);
+    margin: 0 10px;
+}
+
+.newAccbtn {
+    width: 100%;
+    margin-top: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.roleBox{
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgb(4, 16, 17);
+  border-radius: 4px;
+  background-color: white;
+  font-size: 16px;
+  color: rgb(4, 16, 17);
+
+}
+
+
 /* ── Bid modal ─────────────────────────────────────────────── */
 .modal-overlay {
     position: fixed;
