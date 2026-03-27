@@ -1,0 +1,125 @@
+@rendermode InteractiveServer
+@page "/register"
+@inject IUserService UserService
+@inject NavigationManager Navigation
+
+<div class="site-header">
+	<h1> Property Auction </h1>
+
+</div>
+
+
+<div class="detail-container">
+	<h2 id="register-title"> Create an account</h2>
+
+	<p class="detail-box">
+        First Name:<input type="text" @bind="FirstName" placeholder="Enter your first name"><br>
+        Last Name:<input type="text" @bind="LastName" placeholder"Enter your last name"><br>
+		Email:<input type="email" @bind="Email" placeholder="Enter your email"><br>
+        Phone Number:<input type="tel" @bind="PhoneNumber" pattern="[0-9]{10}"><br>
+
+        <label for="role"> Account type:</label>
+        <select class="roleBox" name="role" @bind placeholder="Select account type">
+            <option value="Seller">Seller</option>
+            <option value="Bidder">Bidder</option>
+        </select>
+		Password:<input type="password" @bind="Password" placeholder="Enter your password")><br>
+        Confirm Password: <input type="password" @bind="ConfirmPassword" placeholder="Re-enter your password"><br>
+		<button @onclick="Register">Create account</button>
+	</p>
+
+	<h4 class="divider">or</h4>
+
+	<button class="newAccbtn" @onclick="() => Navigation.NavigateTo("/login")"> 
+        Log into your account
+    </button>
+</div>
+
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>About</h3>
+            <a href="/about">About Us</a>
+            <a href="/terms">Terms & Conditions</a>
+        </div>
+        <div class="footer-section">
+            <h3>Contact</h3>
+            <a href="/contact">Contact Us</a>
+        </div>
+    </div>
+</footer>
+
+@code{
+    public string FirstName { get; set;}
+    public string LastName { get; set;}
+    public string Email { get; set;}
+    public string PhoneNumber { get; set;}
+    public string Role { get; set;} ="Bidder";
+    public string password { get; set;}
+    public string ConfirmPassword { get; set;}
+
+    public string Feedback { get; set; }
+    
+    private async Task Register()
+    {
+        Feeback = "";
+        if(string.IsNullOrWhiteSpace(FirstName) ||
+           string.IsNullOrWhiteSpace(LastName) ||
+           string.IsNullOrWhiteSpace(Email) ||
+           string.IsNullOrWhiteSpace(Password))
+        {
+            Feedback = "Missing data.";
+            return;
+        }
+
+        if (Password != ConfirmPassword)
+        {
+            Feedback = "Passwords do not match!";
+            return;
+        }
+
+        var strongRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+
+        if(!strongRegex.IsMatch(Password))
+        {
+            Feedback = "Password is not strong enough.";
+            return;
+        }
+
+        var result = await UserService.CreateUserAsync(
+            FirstName, LastName, Email, PhoneNumber, Role, Password
+        );
+        
+        if (!result.Success)
+        {
+            Feedback = result.ErrorMessage;
+            return;
+        }
+        Navigation.NavigateTo("/login");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+}
