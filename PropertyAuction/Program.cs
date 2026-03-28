@@ -25,9 +25,9 @@ builder.Services.AddSingleton<PropertyAuction.Services.Services.AdminService>(sp
     return new PropertyAuction.Services.Services.AdminService(auctionService.GetTree());
 });
 
-//register user service
-
-builder.Services.AddSingleton<IUserService, UserService>();
+// register user repository and service
+builder.Services.AddSingleton<PropertyAuction.Core.Interfaces.IUserRepository, PropertyAuction.DataStructures.UserRepository>();
+builder.Services.AddSingleton<PropertyAuction.Core.Interfaces.IUserService, PropertyAuction.Core.Services.UserService>();
 
 var app = builder.Build();
 
