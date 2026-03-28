@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using PropertyAuction.Components;
+using PropertyAuction.Core.Interfaces;
+using PropertyAuction.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +24,10 @@ builder.Services.AddSingleton<PropertyAuction.Services.Services.AdminService>(sp
     var auctionService = sp.GetRequiredService<PropertyAuction.Services.Services.AuctionService>();
     return new PropertyAuction.Services.Services.AdminService(auctionService.GetTree());
 });
+
+//register user service
+
+builder.Services.AddSingleton<IUserService, UserService>();
 
 var app = builder.Build();
 
