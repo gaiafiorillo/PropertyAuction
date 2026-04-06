@@ -1,6 +1,8 @@
 @rendermode InteractiveServer
 @page "/login"
-
+@using PropertyAuction.Core.Interfaces
+@inject IUserService UserService
+@inject NavigationManager Navigation
 
 
 <!-- Header -->
@@ -13,14 +15,20 @@
 <div class="detail-container">
 	<h2 id="login-title"> Log into your account</h2>
 	<p class="detail-box">
-		Email:<input type="text" id="emailInput" placeholder="Enter your email"><br>
-		Password:<input type="password" id="passwordInput" placeholder="Enter your password"><br>
-		<button>Login</button>
+		Email:<input type="text" @bind="Email" id="emailInput" placeholder="Enter your email"><br>
+		Password:<input type="password" @bind="Password" id="passwordInput" placeholder="Enter your password"><br>
+		<button @onclick="HandleLogin">Login</button>
+        @if (!string.IsNullOrEmpty(Feedback))
+        {
+            <p>@Feedback</p>
+        }
 	</p>
 
 	<h4 class="divider">or</h4>
+    <button class="newAccbtn" @onclick='() => Navigation.NavigateTo("/register")'> 
+        Create an account
+    </button>
 
-	<button class="newAccbtn">Create an account</button>
 </div>
 
 <footer class="site-footer">
@@ -36,3 +44,40 @@
         </div>
     </div>
 </footer>
+
+@code{
+    private string Email = "";
+    private string Password = "";
+    private string Feedback = "";
+
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+        {
+            Feedback = "Please fill in all fields.";
+            return;
+        }
+
+        try
+        {
+            var user = await UserService.LoginAsync(Email, Password);
+            
+            if (user == null)
+            {
+                Feedback = "Invalid email or password.";
+                return;
+            }
+
+            
+            Navigation.NavigateTo("/");
+
+        }
+        catch (Exception ex)
+        {
+            Feedback = ex.Message;
+        }
+    
+    
+    }
+
+}
