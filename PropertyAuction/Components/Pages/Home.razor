@@ -26,15 +26,15 @@
     </button>
 </div>
 
-<!-- Filter Search Section -->
+<!-- Hero Filter Section -->
 <div class="filter-section">
-    <!-- Background image as a real div (not pseudo element) so filters stay clickable -->
+    <!-- Background image as a real div (not pseudo-element) so filters stay clickable -->
     <div class="filter-bg"></div>
     <div class="filter-overlay"></div>
 
     <div class="filter-inner">
-        <h2 class="filter-hero-heading">Locate your next <span>property</span> at auction</h2>
-        <p class="filter-hero-sub">Browse properties for auction across England</p>
+        <h2 class="filter-hero-heading">Find your next <span>property</span> at auction</h2>
+        <p class="filter-hero-sub">Browse hundreds of properties across England and Wales</p>
 
         <div class="filter-card">
             <div class="filter-container">
@@ -137,8 +137,8 @@
                             </svg>
                         </button>
                     </div>
-                    <div style="height:52px; overflow:hidden; flex-shrink:0;">                        <p class="property-description">@auction.Description</p>
-                    </div>                    @if (auction.Bedrooms > 0 || auction.Bathrooms > 0)
+                    <p class="property-description">@auction.Description</p>
+                    @if (auction.Bedrooms > 0 || auction.Bathrooms > 0)
                     {
                         <div class="property-features">
                             @if (auction.Bedrooms > 0)
@@ -215,14 +215,14 @@
 
     private int GetBidCount(int auctionId) => BidService.GetBidCount(auctionId);
 
-    // ── Staging variables ─────────────────────────────────────
+    // Staging variables (held until Search is clicked)
     private string stagingLocation = "";
     private string stagingCategory = "";
     private int stagingMinBedrooms = 0;
     private string stagingMaxPrice = "";
     private decimal? stagingCustomMaxPrice = null;
 
-    // ── Applied variables ─────────────────────────────────────
+    // Applied variables
     private string selectedLocation = "";
     private string selectedCategory = "";
     private int minBedrooms = 0;

@@ -331,22 +331,7 @@ body {
 .bookmark-btn.bookmarked { color: var(--red); }
 .bookmark-btn.bookmarked svg { fill: var(--red); }
 
-.footer-section a:hover {
-    color: #3498db;
-}
-
-@media (max-width: 768px) {
-    .filter-container {
-        flex-direction: column;
-    }
-    
-    .property-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Updated Property Card Styles */
-.property-card {
+.property-features {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
@@ -437,7 +422,17 @@ body {
     margin-bottom: 16px;
 }
 
-/* Admin Panel Styles */
+.footer-section a {
+    display: block;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 14px;
+    margin: 8px 0;
+    transition: color var(--transition);
+}
+.footer-section a:hover { color: var(--red); }
+
+/* Admin Panel */
 .admin-header {
     background: var(--charcoal);
     color: var(--white);
@@ -594,16 +589,8 @@ body {
 .btn-danger { background: var(--red); }
 .btn-danger:hover { background: var(--red-dark); }
 
-.btn-danger:hover {
-    background: #c0392b;
-}
-
-/* Submit Page Styles */
-.submit-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
+/* Submit Form */
+.submit-container { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
 
 .submit-content h1 {
     font-family: 'Sora', sans-serif;
@@ -1373,19 +1360,9 @@ body {
     .detail-layout { grid-template-columns: 1fr; }
     .detail-bid-panel { position: static; }
     .contact-grid { grid-template-columns: 1fr; }
-    border-radius: 10px;
-    margin-bottom: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
+}
+
 @media (max-width: 768px) {
-<<<<<<< HEAD
-    .detail-layout {
-        grid-template-columns: 1fr;
-    }
-    .detail-bid-panel {
-        position: static;
-    }
-=======
     .site-header { padding: 0 20px; gap: 14px; }
     .filter-section { min-height: auto; }
     .filter-inner { padding: 36px 20px; }
@@ -1401,6 +1378,4 @@ body {
     .footer-content { flex-direction: column; gap: 36px; }
     .site-footer { padding: 40px 24px 32px; }
     .detail-page-container { padding: 24px 20px 48px; }
-    font-size: 13px;
-    font-weight: 500;
 }
