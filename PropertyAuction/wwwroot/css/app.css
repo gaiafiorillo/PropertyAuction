@@ -1383,3 +1383,86 @@ body {
     .detail-page-container { padding: 24px 20px 48px; }
 }
 
+/* About us page polish */
+.team-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: start;
+}
+
+.team-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    min-width: 100px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+.org-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+    margin-top: 16px;
+}
+
+.org-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.org-step-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--red);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.org-step-title {
+    font-weight: 600;
+    margin: 0;
+}
+
+.org-step-desc {
+    font-size: 13px;
+    color: var(--text-mid);
+    margin: 4px 0 0;
+}
+
+.static-section {
+    margin-bottom: 48px;
+}
+
+.static-section h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+
+.static-lead {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.static-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 20px;
+}
+
+.static-content p {
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
