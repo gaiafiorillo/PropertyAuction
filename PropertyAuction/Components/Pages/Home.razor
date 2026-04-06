@@ -110,10 +110,11 @@
             @foreach (var auction in filteredAuctions)
             {
                 <div class="property-card">
+                    
                     <a href="/auction/@auction.AuctionId" class="detail-link">
                         @if (!string.IsNullOrEmpty(auction.ImageUrl))
                         {
-                            <img src="@auction.ImageUrl" class="property-image" alt="@auction.Title" />
+                            <img src="@auction.ImageUrl" class="property-image" alt="@auction.Title"/>
                         }
                         else
                         {
