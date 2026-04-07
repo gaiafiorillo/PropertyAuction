@@ -10,10 +10,12 @@ namespace PropertyAuction.Core.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IEmailService _emailService;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IEmailService emailService)
         {
             _userRepository = userRepository;
+            _emailService = emailService;
         }
 
         // Check if email is valid
@@ -39,11 +41,14 @@ namespace PropertyAuction.Core.Services
                 Username = username,
                 Email = email,
                 Role = role,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                IsVerified = false,
+                VerificationCode = Guid.NewGuid().ToString("N").Substring(0,6)
             };
 
             user.SetPassword(password);
             await _userRepository.AddAsync(user);
+            await _emailService.SendVerificationEmail(user.Email, user.VerificationCode);
             return user;
         }
 
@@ -67,8 +72,18 @@ namespace PropertyAuction.Core.Services
             }
 
             user.ResetFailedLogin();
+            if (!user.IsVerified)
+                throw new InvalidOperationException("Account not verified. Please check your email.");
+            // Generates login 2fa code
+            user.LoginCode = new Random().Next(100000, 999999).ToString();
+            user.LoginCodeExpiry = DateTime.UtcNow.AddMinutes(5);
+
             await _userRepository.UpdateAsync(user);
+
+            await _emailService.SendLoginCode(user.Email, user.LoginCode);
+
             return user;
+
         }
 
         public async Task<User> GetByUsernameAsync(string username)
@@ -81,6 +96,40 @@ namespace PropertyAuction.Core.Services
             await RegisterAsync("alice_bidder", "alice@example.com", "Password123!", UserRole.Bidder);
             await RegisterAsync("bob_seller", "bob@example.com", "Password123!", UserRole.Seller);
             await RegisterAsync("carol_admin", "carol@example.com", "Password123!", UserRole.Admin);
+        }
+
+        public async Task<bool> VerifyRegistrationCodeAsync(string email, string code)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null)
+                return false;
+
+
+
+            if (user.VerificationCode != code)
+                return false;
+
+            user.IsVerified = true;
+            user.VerificationCode = null;
+
+            await _userRepository.UpdateAsync(user);
+            return true;
+        }
+
+        public async Task<bool> VerifyLoginCodeAsync(string email, string code)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null)
+                return false;
+
+            if (user.LoginCode != code || user.LoginCodeExpiry < DateTime.UtcNow)
+                return false;
+
+            user.LoginCode = null;
+            user.LoginCodeExpiry = null;
+
+            await _userRepository.UpdateAsync(user);
+            return true;
         }
     }
 }

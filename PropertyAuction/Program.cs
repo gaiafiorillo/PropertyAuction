@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using PropertyAuction.Components;
 using PropertyAuction.Core.Interfaces;
 using PropertyAuction.Core.Services;
+using PropertyAuction.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,10 @@ builder.Services.AddSingleton<PropertyAuction.Services.Services.AdminService>(sp
 
 // register user repository and service
 builder.Services.AddSingleton<PropertyAuction.Core.Interfaces.IUserRepository, PropertyAuction.DataStructures.UserRepository>();
-builder.Services.AddSingleton<PropertyAuction.Core.Interfaces.IUserService, PropertyAuction.Core.Services.UserService>();
+builder.Services.AddScoped<PropertyAuction.Core.Interfaces.IUserService, PropertyAuction.Core.Services.UserService>();
+
+// email services
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

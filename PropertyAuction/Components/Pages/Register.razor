@@ -96,7 +96,7 @@
                 roleEnum
             );
 
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo($"/verify?type=register&email={Email}");
         }
         catch (Exception ex)
         {

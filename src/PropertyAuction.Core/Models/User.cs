@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography.X509Certificates;
 using PropertyAuction.Core.Enums;
 
 namespace PropertyAuction.Core.Models
@@ -10,6 +11,17 @@ namespace PropertyAuction.Core.Models
         public required string Email { get; set; }
 
 		public string PasswordHash { get; set; }
+
+		// Login verification
+		public string? LoginCode { get; set; }
+		public DateTime? LoginCodeExpiry { get; set; }
+
+		// Registation Verification
+		public bool IsVerified { get; set; } = false;
+		public string? VerificationCode { get; set; }
+
+		
+
 
 		// When the account was created
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

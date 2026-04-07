@@ -1,0 +1,81 @@
+@page "/verify"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.WebUtilities
+@using PropertyAuction.Core.Interfaces
+
+<h3>@Title</h3>
+
+<div class="verify-container">
+    <input @bind="Email" disabled class="form-control" />
+    <input @bind="Code" placeholder="Verification Code" class="form-control" />
+
+    <button @onclick="VerifyCode" class="btn btn-primary">Verify</button>
+
+    <p>@Message</p>
+</div>
+
+@code {
+    public string Email { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+
+    private string Mode { get; set; } = "register";
+    private string Title => Mode == "login" ? "Login Verification" : "Email Verification";
+
+    [Inject] NavigationManager Nav { get; set; }
+    [Inject] IUserService UserService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var uri = Nav.ToAbsoluteUri(Nav.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+        // Read mode (login/register)
+        if (query.TryGetValue("type", out var type))
+        {
+            Mode = type == "login" ? "login" : "register";
+        }
+
+        // Read email from query string
+        if (query.TryGetValue("email", out var email))
+        {
+            Email = email!;
+        }
+    }
+
+    private async Task VerifyCode()
+    {
+        bool ok;
+
+        if (Mode == "login")
+        {
+            ok = await UserService.VerifyLoginCodeAsync(Email, Code);
+
+            if (ok)
+            {
+                Message = "Login successful!";
+                await Task.Delay(1000);
+                Nav.NavigateTo("/");
+            }
+            else
+            {
+                Message = "Invalid or expired login code.";
+            }
+        }
+        else
+        {
+            ok = await UserService.VerifyRegistrationCodeAsync(Email, Code);
+
+            if (ok)
+            {
+                Message = "Email verified!";
+                await Task.Delay(1000);
+                Nav.NavigateTo("/login");
+            }
+            else
+            {
+                Message = "Invalid verification code.";
+            }
+        }
+    }
+}

@@ -12,5 +12,8 @@ namespace PropertyAuction.Core.Interfaces
         Task<User> LoginAsync(string usernameOrEmail, string password);
 		Task<User> GetByUsernameAsync(string username);
 		Task LoadSampleUsersAsync();
+
+        Task<bool> VerifyRegistrationCodeAsync(string email, string code);
+        Task<bool> VerifyLoginCodeAsync(string email, string code);
     }
 }
