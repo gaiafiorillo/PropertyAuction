@@ -7,7 +7,7 @@
 @inject BidService BidService
 @implements IDisposable
 
-<PageTitle>Property Auction Platform</PageTitle>
+<PageTitle>MainsAuction</PageTitle>
 
 <BidModal Auction="selectedAuction"
           IsVisible="showBidModal"
@@ -19,67 +19,77 @@
     <button class="icon-btn" @onclick="NavigateHome">
         <span class="icon">🏠</span>
     </button>
-    <h1 class="site-title">Property Auction</h1>
+    <h1 class="site-title">MainsAuction</h1>
     <a href="/submit" class="header-link">Sell properties for organisations</a>
     <button class="icon-btn" @onclick="NavigateToProfile">
         <span class="icon">👤</span>
     </button>
 </div>
 
-<!-- Filter Search Section -->
+<!-- Hero Filter Section -->
 <div class="filter-section">
-    <h2>Filter search</h2>
-    <div class="filter-container">
-        <div class="filter-item">
-            <label>Location</label>
-            <select @bind="stagingLocation" class="filter-input">
-                <option value="">All Locations</option>
-                <option value="London">London</option>
-                <option value="Manchester">Manchester</option>
-                <option value="Birmingham">Birmingham</option>
-            </select>
+    <!-- Background image as a real div (not pseudo-element) so filters stay clickable -->
+    <div class="filter-bg"></div>
+    <div class="filter-overlay"></div>
+
+    <div class="filter-inner">
+        <h2 class="filter-hero-heading">Find your next <span>property</span> at auction</h2>
+        <p class="filter-hero-sub">Browse hundreds of properties across England and Wales</p>
+
+        <div class="filter-card">
+            <div class="filter-container">
+                <div class="filter-item">
+                    <label>Location</label>
+                    <select @bind="stagingLocation" class="filter-input">
+                        <option value="">All Locations</option>
+                        <option value="London">London</option>
+                        <option value="Manchester">Manchester</option>
+                        <option value="Birmingham">Birmingham</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>Property type</label>
+                    <select @bind="stagingCategory" class="filter-input">
+                        <option value="">All Types</option>
+                        <option value="houses">Houses</option>
+                        <option value="flats">Flats</option>
+                        <option value="shops">Shops</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>Min bedrooms</label>
+                    <select @bind="stagingMinBedrooms" class="filter-input">
+                        <option value="0">No min</option>
+                        <option value="1">1+</option>
+                        <option value="2">2+</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>Max price</label>
+                    <select @bind="stagingMaxPrice" class="filter-input">
+                        <option value="">Any price</option>
+                        <option value="100000">£100,000</option>
+                        <option value="200000">£200,000</option>
+                        <option value="300000">£300,000</option>
+                        <option value="500000">£500,000</option>
+                        <option value="750000">£750,000</option>
+                        <option value="1000000">£1,000,000</option>
+                        <option value="custom">Custom...</option>
+                    </select>
+                    @if (stagingMaxPrice == "custom")
+                    {
+                        <input type="number"
+                               @bind="stagingCustomMaxPrice"
+                               placeholder="Enter amount"
+                               class="filter-input"
+                               style="margin-top: 8px;" />
+                    }
+                </div>
+                <button class="update-btn" @onclick="UpdatePreferences">Search</button>
+            </div>
         </div>
-        <div class="filter-item">
-            <label>Property type</label>
-            <select @bind="stagingCategory" class="filter-input">
-                <option value="">All Types</option>
-                <option value="houses">Houses</option>
-                <option value="flats">Flats</option>
-                <option value="shops">Shops</option>
-            </select>
-        </div>
-        <div class="filter-item">
-            <label>Min bedrooms</label>
-            <select @bind="stagingMinBedrooms" class="filter-input">
-                <option value="0">No min</option>
-                <option value="1">1+</option>
-                <option value="2">2+</option>
-                <option value="3">3+</option>
-                <option value="4">4+</option>
-            </select>
-        </div>
-        <div class="filter-item">
-            <label>Max price</label>
-            <select @bind="stagingMaxPrice" class="filter-input">
-                <option value="">Any price</option>
-                <option value="100000">£100,000</option>
-                <option value="200000">£200,000</option>
-                <option value="300000">£300,000</option>
-                <option value="500000">£500,000</option>
-                <option value="750000">£750,000</option>
-                <option value="1000000">£1,000,000</option>
-                <option value="custom">Custom...</option>
-            </select>
-            @if (stagingMaxPrice == "custom")
-            {
-                <input type="number"
-                       @bind="stagingCustomMaxPrice"
-                       placeholder="Enter amount"
-                       class="filter-input"
-                       style="margin-top: 8px;" />
-            }
-        </div>
-        <button class="update-btn" @onclick="UpdatePreferences">Update preferences</button>
     </div>
 </div>
 
@@ -100,10 +110,11 @@
             @foreach (var auction in filteredAuctions)
             {
                 <div class="property-card">
+                    
                     <a href="/auction/@auction.AuctionId" class="detail-link">
                         @if (!string.IsNullOrEmpty(auction.ImageUrl))
                         {
-                            <img src="@auction.ImageUrl" class="property-image" alt="@auction.Title" />
+                            <img src="@auction.ImageUrl" class="property-image" alt="@auction.Title"/>
                         }
                         else
                         {
@@ -120,8 +131,9 @@
                             </h3>
                             <p class="property-location">📍 @auction.Location</p>
                         </div>
-                        <button class="bookmark-btn" @onclick="() => ToggleBookmark(auction.AuctionId)">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <button class="bookmark-btn @(bookmarked.Contains(auction.AuctionId) ? "bookmarked" : "")"
+                                @onclick="() => ToggleBookmark(auction.AuctionId)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                             </svg>
                         </button>
@@ -159,7 +171,7 @@
                     }
                     else
                     {
-                        <button class="bid-btn" disabled style="background:#bdc3c7; cursor:not-allowed;">
+                        <button class="bid-btn" disabled>
                             Auction Ended
                         </button>
                     }
@@ -188,6 +200,7 @@
 @code {
     private bool showBidModal = false;
     private Auction? selectedAuction = null;
+    private HashSet<int> bookmarked = new();
 
     private void OpenBidModal(Auction auction)
     {
@@ -203,14 +216,14 @@
 
     private int GetBidCount(int auctionId) => BidService.GetBidCount(auctionId);
 
-    // ── Staging variables ─────────────────────────────────────
+    // Staging variables (held until Search is clicked)
     private string stagingLocation = "";
     private string stagingCategory = "";
     private int stagingMinBedrooms = 0;
     private string stagingMaxPrice = "";
     private decimal? stagingCustomMaxPrice = null;
 
-    // ── Applied variables ─────────────────────────────────────
+    // Applied variables
     private string selectedLocation = "";
     private string selectedCategory = "";
     private int minBedrooms = 0;
@@ -235,8 +248,6 @@
                 ApplyFilters();
                 StateHasChanged();
             });
-            InvokeAsync(StateHasChanged); // re render for countdown, don't reload auction
-
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
     }
 
@@ -304,5 +315,11 @@
 
     private void NavigateHome() { }
     private void NavigateToProfile() { }
-    private void ToggleBookmark(int auctionId) { }
+    private void ToggleBookmark(int auctionId)
+    {
+        if (bookmarked.Contains(auctionId))
+            bookmarked.Remove(auctionId);
+        else
+            bookmarked.Add(auctionId);
+    }
 }

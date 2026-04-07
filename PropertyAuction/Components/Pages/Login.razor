@@ -4,33 +4,31 @@
 @inject IUserService UserService
 @inject NavigationManager Navigation
 
+
+<!-- Header -->
 <div class="site-header">
-    <h1> Property Auction </h1>
+	<h1> MainsAuction </h1>
+
 </div>
 
+
 <div class="detail-container">
-    <h2 id="login-title"> Log into your account</h2>
-
-    <p class="detail-box">
-        Email:
-        <input type="text" @bind="UsernameOrEmail" placeholder="Enter your email"><br>
-
-        Password:
-        <input type="password" @bind="Password" placeholder="Enter your password"><br>
-
-        <button @onclick="HandleLogin">Login</button>
-
+	<h2 id="login-title"> Log into your account</h2>
+	<p class="detail-box">
+		Email:<input type="text" @bind="Email" id="emailInput" placeholder="Enter your email"><br>
+		Password:<input type="password" @bind="Password" id="passwordInput" placeholder="Enter your password"><br>
+		<button @onclick="HandleLogin">Login</button>
         @if (!string.IsNullOrEmpty(Feedback))
         {
             <p>@Feedback</p>
         }
-    </p>
+	</p>
 
-    <h4 class="divider">or</h4>
-
-    <button class="newAccbtn" @onclick='() => Navigation.NavigateTo("/register")'>
+	<h4 class="divider">or</h4>
+    <button class="newAccbtn" @onclick='() => Navigation.NavigateTo("/register")'> 
         Create an account
     </button>
+
 </div>
 
 <footer class="site-footer">
@@ -47,22 +45,39 @@
     </div>
 </footer>
 
-@code {
-    public string UsernameOrEmail { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string Feedback { get; set; } = string.Empty;
+@code{
+    private string Email = "";
+    private string Password = "";
+    private string Feedback = "";
 
     private async Task HandleLogin()
     {
-        var user = await UserService.LoginAsync(UsernameOrEmail, Password);
-
-        if (user == null)
+        if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
         {
-            Feedback = "Invalid email or password";
+            Feedback = "Please fill in all fields.";
             return;
         }
 
-        // Login succeeded but requires 2FA
-        Navigation.NavigateTo("/verify?type=login");
+        try
+        {
+            var user = await UserService.LoginAsync(Email, Password);
+            
+            if (user == null)
+            {
+                Feedback = "Invalid email or password.";
+                return;
+            }
+
+            
+            Navigation.NavigateTo("/");
+
+        }
+        catch (Exception ex)
+        {
+            Feedback = ex.Message;
+        }
+    
+    
     }
+
 }

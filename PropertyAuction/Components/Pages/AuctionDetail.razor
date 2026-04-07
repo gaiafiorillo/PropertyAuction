@@ -20,7 +20,7 @@
     <button class="icon-btn" @onclick='() => Navigation.NavigateTo("/")'>
         <span class="icon">🏠</span>
     </button>
-    <h1 class="site-title">Property Auction</h1>
+    <h1 class="site-title">MainsAuction</h1>
     <a href="/submit" class="header-link">Sell properties for organisations</a>
     <button class="icon-btn">
         <span class="icon">👤</span>
@@ -29,14 +29,14 @@
 
 @if (_auction == null)
 {
-    <div class="submit-container">
-        <p>Auction not found.</p>
+    <div class="detail-page-container">
+        <p style="color: var(--text-muted); margin-bottom: 16px;">Auction not found.</p>
         <button class="update-btn" @onclick='() => Navigation.NavigateTo("/")'>Back to listings</button>
     </div>
 }
 else
 {
-    <div class="detail-container">
+    <div class="detail-page-container">
 
         <button class="detail-back-btn" @onclick='() => Navigation.NavigateTo("/")'>
             ← Back to listings
@@ -44,18 +44,20 @@ else
 
         <div class="detail-layout">
 
-            <!-- Left column -->
+            <!-- Left column: image + info -->
             <div class="detail-left">
+
                 @if (!string.IsNullOrEmpty(_auction.ImageUrl))
                 {
                     <img src="@_auction.ImageUrl" class="detail-image" alt="@_auction.Title" />
                 }
                 else
                 {
-                    <div class="property-image-placeholder" style="height:300px;">
-                        <span class="image-icon">🏠</span>
-                    </div>
+                    <div class="detail-image-placeholder">🏠</div>
                 }
+
+                <h1 class="detail-title">@_auction.Title</h1>
+                <p class="detail-location">📍 @_auction.Location</p>
 
                 <div class="detail-section">
                     <h2>About this property</h2>
@@ -112,29 +114,32 @@ else
                 </div>
             </div>
 
-            <!-- Right column: bidding panel -->
+            <!-- Right column: bid panel -->
             <div class="detail-right">
                 <div class="detail-bid-panel">
-                    <h2>Current bid</h2>
-                    <p class="detail-current-bid">£@_auction.CurrentHighestBid.ToString("N0")</p>
-                    <p class="detail-bid-count">@BidService.GetBidCount(_auction.AuctionId) bids placed</p>
 
-                    <div class="detail-timer">
-                        <span class="time-left-label">Time remaining</span>
-                        <p class="time-remaining @(GetTimeRemaining(_auction.EndTime) == "Ended" ? "" : "detail-timer-active")">
-                            @GetTimeRemaining(_auction.EndTime)
-                        </p>
+                    <div class="detail-bid-panel-top">
+                        <h2>Current bid</h2>
+                        <p class="detail-current-bid">£@_auction.CurrentHighestBid.ToString("N0")</p>
+                        <p class="detail-bid-count">@BidService.GetBidCount(_auction.AuctionId) bids placed</p>
+
+                        <div class="detail-timer">
+                            <span class="detail-timer-label">Time remaining</span>
+                            <span class="@(GetTimeRemaining(_auction.EndTime) == "Ended" ? "" : "detail-timer-active")">
+                                @GetTimeRemaining(_auction.EndTime)
+                            </span>
+                        </div>
                     </div>
 
                     @if (_auction.IsActive())
                     {
-                        <button class="bid-btn" @onclick="() => _showBidModal = true">
+                        <button class="detail-place-bid-btn" @onclick="() => _showBidModal = true">
                             Place Bid
                         </button>
                     }
                     else
                     {
-                        <button class="bid-btn" disabled style="background:#bdc3c7; cursor:not-allowed;">
+                        <button class="detail-place-bid-btn" disabled>
                             Auction Ended
                         </button>
                     }
@@ -152,8 +157,10 @@ else
                             }
                         </div>
                     }
+
                 </div>
             </div>
+
         </div>
     </div>
 }
