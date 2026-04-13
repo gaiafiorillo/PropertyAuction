@@ -17,24 +17,47 @@
 <!-- Header -->
 <div class="site-header">
     <button class="icon-btn" @onclick="NavigateHome">
-        <span class="icon">🏠</span>
+        <div class="logo-mark">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+        </div>
     </button>
     <h1 class="site-title">MainsAuction</h1>
-    <a href="/submit" class="header-link">Sell properties for organisations</a>
-    <button class="icon-btn" @onclick="NavigateToProfile">
-        <span class="icon">👤</span>
+    <a href="/submit" class="header-link">Sell a property</a>
+    <a href="/about" class="header-link">How it works</a>
+    <div class="header-divider"></div>
+    <button class="sign-in-btn" @onclick="NavigateToProfile">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Sign in
     </button>
 </div>
 
 <!-- Hero Filter Section -->
 <div class="filter-section">
-    <!-- Background image as a real div (not pseudo-element) so filters stay clickable -->
     <div class="filter-bg"></div>
     <div class="filter-overlay"></div>
+    <div class="filter-decor-1"></div>
+    <div class="filter-decor-2"></div>
+
+    <div class="hero-stat-pills">
+        <div class="hero-stat-pill">@allAuctions.Count active auctions</div>
+        <div class="hero-stat-pill">England </div>
+    </div>
 
     <div class="filter-inner">
-        <h2 class="filter-hero-heading">Find your next <span>property</span> at auction</h2>
-        <p class="filter-hero-sub">Browse hundreds of properties across England and Wales</p>
+        <div class="hero-text-backdrop">
+            <div class="hero-live-badge">
+                <div class="hero-live-dot"></div>
+                <span class="hero-live-text">@allAuctions.Count live auctions</span>
+            </div>
+            <h2 class="filter-hero-heading">Find your next <span>property</span> at auction</h2>
+            <p class="filter-hero-sub">Browse hundreds of residential and commercial properties across England and Wales</p>
+        </div>
 
         <div class="filter-card">
             <div class="filter-container">
@@ -88,14 +111,49 @@
                     }
                 </div>
                 <button class="update-btn" @onclick="UpdatePreferences">Search</button>
+                <button class="clear-btn" @onclick="ClearFilters">Clear</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Trust Bar -->
+<div class="trust-bar">
+    <div class="trust-bar-inner">
+        <div class="trust-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Secure bidding
+        </div>
+        <div class="trust-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Live countdown timers
+        </div>
+        <div class="trust-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Admin approved listings
+        </div>
+        <div class="trust-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            England regulated
         </div>
     </div>
 </div>
 
 <!-- Properties Section -->
 <div class="properties-section">
-    <h2>Properties for auction (@filteredAuctions.Count)</h2>
+    <div class="listings-heading-row">
+        <h2>Properties for auction <span class="listings-count">(@filteredAuctions.Count)</span></h2>
+    </div>
 
     @if (!filteredAuctions.Any())
     {
@@ -110,20 +168,27 @@
             @foreach (var auction in filteredAuctions)
             {
                 <div class="property-card">
-                    
+
                     <a href="/auction/@auction.AuctionId" class="detail-link">
-                        @if (!string.IsNullOrEmpty(auction.ImageUrl))
-                        {
-                            <img src="@auction.ImageUrl" class="property-image" alt="@auction.Title"/>
-                        }
-                        else
-                        {
-                            <div class="property-image-placeholder">
-                                <span class="image-icon">🏠</span>
-                                <p>@auction.Category</p>
+                        <div class="card-image-wrapper">
+                            @if (!string.IsNullOrEmpty(auction.ImageUrl))
+                            {
+                                <img src="@auction.ImageUrl" class="property-image" alt="@auction.Title"/>
+                            }
+                            else
+                            {
+                                <div class="property-image-placeholder">
+                                    <span class="image-icon">🏠</span>
+                                    <p>@auction.Category</p>
+                                </div>
+                            }
+                            <div class="card-type-badge">@auction.Category</div>
+                            <div class="card-time-badge @(auction.IsActive() ? "" : "ended")">
+                                @(auction.IsActive() ? GetTimeRemaining(auction.EndTime) : "Ended")
                             </div>
-                        }
+                        </div>
                     </a>
+
                     <div class="card-header">
                         <div class="property-info">
                             <h3 class="property-title">
@@ -187,7 +252,7 @@
         <div class="footer-section">
             <h3>About</h3>
             <a href="/about">About Us</a>
-            <a href="/terms">Terms & Conditions</a>
+            <a href="/terms">Terms &amp; Conditions</a>
         </div>
         <div class="footer-section">
             <h3>Contact</h3>
@@ -315,6 +380,7 @@
 
     private void NavigateHome() { }
     private void NavigateToProfile() { }
+
     private void ToggleBookmark(int auctionId)
     {
         if (bookmarked.Contains(auctionId))
