@@ -2,115 +2,207 @@
 @page "/admin"
 @using PropertyAuction.Core.Models
 @using PropertyAuction.Services.Services
+@using PropertyAuction.Components.Shared
 @inject AdminService AdminService
+@inject ContactService ContactService
 @inject NavigationManager Navigation
 
 <PageTitle>Admin Panel - MainsAuction</PageTitle>
 
-@using PropertyAuction.Components.Shared
-
 <SiteHeader />
 
-<div class="admin-container">
-    <h1>Admin Panel - Pending Auctions</h1>
-    
-    @if (pendingAuctions.Count == 0)
-    {
-        <div class="empty-state">
-            <p>No pending auctions to review.</p>
-            <p>Submissions will appear here for approval.</p>
-        </div>
-    }
-    else
-    {
-        <p class="pending-count">@pendingAuctions.Count auction(s) awaiting approval</p>
-        
-        <div class="admin-grid">
-            @foreach (var auction in pendingAuctions)
+@if (!isAuthenticated)
+{
+    <div class="admin-login">
+        <div class="admin-login-card">
+            <h2>Admin Access</h2>
+            <p>Enter the admin password to continue.</p>
+            <div class="form-group">
+                <input type="password" @bind="passwordInput" class="form-input" placeholder="Password" 
+                       @onkeydown="HandleKeyDown" />
+            </div>
+            @if (!string.IsNullOrEmpty(authError))
             {
-                <div class="admin-card">
-                    <div class="admin-card-header">
-                        <h3>@auction.Title</h3>
-                        <span class="status-badge pending">Pending</span>
-                    </div>
-                    
-                    <div class="admin-card-body">
-                        <p><strong>Location:</strong> @auction.Location</p>
-                        <p><strong>Category:</strong> @auction.Category</p>
-                        <p><strong>Starting Price:</strong> £@auction.StartingPrice.ToString("N0")</p>
-                        <p><strong>Description:</strong> @auction.Description</p>
-                        <p><strong>Submitted for:</strong> @auction.StartTime.ToString("dd MMM yyyy") - @auction.EndTime.ToString("dd MMM yyyy")</p>
-                    </div>
-                    
-                    <div class="admin-actions">
-                        <button class="btn-approve" @onclick="() => Approve(auction.AuctionId)">
-                            ✓ Approve & Publish
-                        </button>
-                        <button class="btn-reject" @onclick="() => Reject(auction.AuctionId)">
-                            ✗ Reject
-                        </button>
-                    </div>
+                <div class="error-message">@authError</div>
+            }
+            <button class="btn-approve" @onclick="TryLogin">Login</button>
+        </div>
+    </div>
+}
+else
+{
+    <div class="admin-container">
+        <div class="admin-tabs">
+            <button class="admin-tab @(activeTab == "auctions" ? "active" : "")" 
+                    @onclick='() => activeTab = "auctions"'>
+                Pending Auctions
+                @if (pendingAuctions.Count > 0)
+                {
+                    <span class="badge">@pendingAuctions.Count</span>
+                }
+            </button>
+            <button class="admin-tab @(activeTab == "enquiries" ? "active" : "")" 
+                    @onclick='() => activeTab = "enquiries"'>
+                Contact Enquiries
+                @if (ContactService.UnreadCount() > 0)
+                {
+                    <span class="badge">@ContactService.UnreadCount()</span>
+                }
+            </button>
+        </div>
+
+        @if (activeTab == "auctions")
+        {
+            <h2>Pending Auctions</h2>
+            @if (pendingAuctions.Count == 0)
+            {
+                <div class="empty-state">
+                    <p>No pending auctions to review.</p>
+                    <p>Submissions will appear here for approval.</p>
                 </div>
             }
-        </div>
-    }
-    
-    @if (!string.IsNullOrEmpty(message))
-    {
-        <div class="@(messageSuccess ? "success-message" : "error-message")">
-            @message
-        </div>
-    }
-</div>
+            else
+            {
+                <p class="pending-count">@pendingAuctions.Count auction(s) awaiting approval</p>
+                <div class="admin-grid">
+                    @foreach (var auction in pendingAuctions)
+                    {
+                        <div class="admin-card">
+                            <div class="admin-card-header">
+                                <h3>@auction.Title</h3>
+                                <span class="status-badge pending">Pending</span>
+                            </div>
+                            <div class="admin-card-body">
+                                <p><strong>Location:</strong> @auction.Location</p>
+                                <p><strong>Category:</strong> @auction.Category</p>
+                                <p><strong>Starting Price:</strong> £@auction.StartingPrice.ToString("N0")</p>
+                                <p><strong>Description:</strong> @auction.Description</p>
+                                <p><strong>Submitted for:</strong> @auction.StartTime.ToString("dd MMM yyyy") - @auction.EndTime.ToString("dd MMM yyyy")</p>
+                            </div>
+                            <div class="admin-actions">
+                                <button class="btn-approve" @onclick="() => Approve(auction.AuctionId)">
+                                    ✓ Approve & Publish
+                                </button>
+                                <button class="btn-reject" @onclick="() => Reject(auction.AuctionId)">
+                                    ✗ Reject
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+
+        @if (activeTab == "enquiries")
+        {
+            <h2>Contact Enquiries</h2>
+            @if (!ContactService.GetAll().Any())
+            {
+                <div class="empty-state">
+                    <p>No enquiries yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="enquiries-list">
+                    @foreach (var submission in ContactService.GetAll())
+                    {
+                        <div class="enquiry-card @(submission.IsRead ? "" : "enquiry-unread")">
+                            <div class="enquiry-header">
+                                <div>
+                                    <strong>@submission.Name</strong>
+                                    <span class="enquiry-email">@submission.Email</span>
+                                </div>
+                                <span class="enquiry-date">@submission.SubmittedAt.ToString("dd MMM yyyy HH:mm")</span>
+                            </div>
+                            <p class="enquiry-subject">@submission.Subject</p>
+                            <p class="enquiry-message">@submission.Message</p>
+                            @if (!submission.IsRead)
+                            {
+                                <button @onclick="() => ContactService.MarkAsRead(submission.Id)" 
+                                        class="btn-mark-read">
+                                    Mark as read
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="enquiry-read-label">✓ Read</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="@(messageSuccess ? "success-message" : "error-message")">
+                @message
+            </div>
+        }
+    </div>
+}
 
 @code {
     private List<Auction> pendingAuctions = new();
     private string message = "";
     private bool messageSuccess = false;
-    
-    protected override void OnInitialized()
+    private string activeTab = "auctions";
+
+    // Simple auth
+    private bool isAuthenticated = false;
+    private string passwordInput = "";
+    private string authError = "";
+    private const string AdminPassword = "admin123";
+
+    private void TryLogin()
     {
-        Console.WriteLine("Admin page loading...");
-        LoadPending();
-        Console.WriteLine($"Found {pendingAuctions.Count} pending auctions");
+        if (passwordInput == AdminPassword)
+        {
+            isAuthenticated = true;
+            authError = "";
+            LoadPending();
+        }
+        else
+        {
+            authError = "Incorrect password.";
+        }
     }
-    
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") TryLogin();
+    }
+
+    protected override void OnInitialized() { }
+
     private void LoadPending()
     {
         pendingAuctions = AdminService.GetPendingAuctions();
-        Console.WriteLine($"LoadPending: {pendingAuctions.Count} pending auctions");
-        foreach (var a in pendingAuctions)
-        {
-            Console.WriteLine($"  - Auction #{a.AuctionId}: {a.Title} (Status: {a.Status})");
-        }
     }
-    
+
     private void Approve(int auctionId)
     {
-        Console.WriteLine($"Approving auction #{auctionId}");
         if (AdminService.ApproveAuction(auctionId))
         {
             message = "Auction approved and published!";
             messageSuccess = true;
             LoadPending();
-            
-            Task.Delay(3000).ContinueWith(_ => 
+            Task.Delay(3000).ContinueWith(_ =>
             {
                 InvokeAsync(() => { message = ""; StateHasChanged(); });
             });
         }
     }
-    
+
     private void Reject(int auctionId)
     {
-        Console.WriteLine($"Rejecting auction #{auctionId}");
         if (AdminService.RejectAuction(auctionId))
         {
             message = "Auction rejected.";
             messageSuccess = false;
             LoadPending();
-            
-            Task.Delay(3000).ContinueWith(_ => 
+            Task.Delay(3000).ContinueWith(_ =>
             {
                 InvokeAsync(() => { message = ""; StateHasChanged(); });
             });

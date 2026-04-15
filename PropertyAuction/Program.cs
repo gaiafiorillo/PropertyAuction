@@ -12,6 +12,9 @@ builder.Services.AddRazorComponents()
 // Register services
 builder.Services.AddSingleton<PropertyAuction.Services.Services.AuctionService>();
 
+//register contact form service 
+builder.Services.AddSingleton<PropertyAuction.Services.Services.ContactService>();
+
 // Change BidService registration to use the one from AuctionService
 builder.Services.AddSingleton<PropertyAuction.Services.Services.BidService>(sp =>
 {
