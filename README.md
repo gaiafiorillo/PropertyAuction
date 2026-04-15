@@ -4,6 +4,7 @@
 
 **CST2550 Group Coursework Middlesex University**
 
+[📄 View Report](docs/Report/Mains_Report.pdf)
 ---
 
 ## Prerequisites
