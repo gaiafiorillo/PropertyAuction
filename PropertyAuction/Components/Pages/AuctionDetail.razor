@@ -10,22 +10,16 @@
 
 <PageTitle>@(_auction?.Title ?? "Auction Detail") - Property Auction</PageTitle>
 
+@using PropertyAuction.Components.Shared
+
+<SiteHeader />
+
 <BidModal Auction="_auction"
           IsVisible="_showBidModal"
           OnClose="CloseBidModal"
           OnBidPlaced="StateHasChanged" />
 
-<!-- Header -->
-<div class="site-header">
-    <button class="icon-btn" @onclick='() => Navigation.NavigateTo("/")'>
-        <span class="icon">🏠</span>
-    </button>
-    <h1 class="site-title">MainsAuction</h1>
-    <a href="/submit" class="header-link">Sell properties for organisations</a>
-    <button class="icon-btn">
-        <span class="icon">👤</span>
-    </button>
-</div>
+
 
 @if (_auction == null)
 {

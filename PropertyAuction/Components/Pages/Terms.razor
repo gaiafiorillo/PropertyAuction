@@ -1,14 +1,12 @@
+@rendermode InteractiveServer
 @page "/terms"
 
 <PageTitle>Terms & Conditions - MainsAuction</PageTitle>
 
-<div class="site-header">
-    <button class="icon-btn" onclick="window.location='/'">
-        <span class="icon">🏠</span>
-    </button>
-    <h1 class="site-title">Property Auction</h1>
-    <a href="/submit" class="header-link">Sell properties for organisations</a>
-</div>
+
+@using PropertyAuction.Components.Shared
+
+<SiteHeader />
 
 <div class="static-container">
     <div class="static-content">

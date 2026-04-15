@@ -7,14 +7,9 @@
 
 <PageTitle>Admin Panel - MainsAuction</PageTitle>
 
-<!-- Header -->
-<div class="site-header">
-    <button class="icon-btn" @onclick='() => Navigation.NavigateTo("/")'>
-        <span class="icon">🏠</span>
-    </button>
-    <h1 class="site-title">MainsAuction - Admin</h1>
-    
-</div>
+@using PropertyAuction.Components.Shared
+
+<SiteHeader />
 
 <div class="admin-container">
     <h1>Admin Panel - Pending Auctions</h1>
