@@ -29,7 +29,7 @@ git clone https://github.com/gaiafiorillo/PropertyAuction.git
 dotnet run --project "PropertyAuction/"
 ```
 
-The app will be available at the URL shown in the terminal
+The app will be available at the URL shown in the terminal (normally http://localhost:5212/)
 
 ---
 
@@ -102,17 +102,7 @@ media/
 - **AI chat assistant** : ask questions about properties and the auction process
 - **User authentication** : register, log in, and manage your account
 
-## Pages
 
-| Route | Description |
-|---|---|
-| `/` | Home. browse active auction listings |
-| `/login` | Log in to your account |
-| `/register` | Create a new account |
-| `/submit` | Submit a property for auction |
-| `/auction/{id}` | Auction detail and bidding page |
-| `/admin` | Admin panel : approve listings sent from/submit|
----
 
 ## Data Structures
 
@@ -126,6 +116,54 @@ All data structures are custom implementations — no third-party or standard li
 
 ---
 
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Home](media/screenshots/websitescreenshots/Home.png) | ![Listings](media/screenshots/websitescreenshots/listingsinhome.png) |
+| *Home page* | *Property listings* |
+| ![Listing page](media/screenshots/websitescreenshots/listingpage.png) | ![Place bid](media/screenshots/websitescreenshots/placebid.png) |
+| *Auction detail page* | *Place a bid* |
+| ![Register](media/screenshots/websitescreenshots/Register.png) | ![Verify email](media/screenshots/websitescreenshots/verifyemail.png) |
+| *Register* | *Email verification* |
+| ![Login](media/screenshots/websitescreenshots/Login.png) | ![Submit property](media/screenshots/websitescreenshots/submitproperty.png) |
+| *Login* | *Submit a property* |
+| ![Admin access](media/screenshots/websitescreenshots/Adminaccess.png) | ![Admin listings](media/screenshots/websitescreenshots/adminpanellistings.png) |
+| *Admin login* | *Admin panel : listings* |
+| ![Admin approved](media/screenshots/websitescreenshots/adminpanelafterlisingisapproved.png) | ![Admin enquiries](media/screenshots/websitescreenshots/adminpanelenquiries.png) |
+| *Admin panel — approved listing* | *Admin panel : contact enquiries* |
+| ![Contact](media/screenshots/websitescreenshots/ContactUs.png) | ![AI Agent](media/screenshots/websitescreenshots/AIagentcomponent.png) |
+| *Contact us* | *AI chat assistant* |
+| ![About](media/screenshots/websitescreenshots/Aboutus.png) | ![Terms](media/screenshots/websitescreenshots/T%26C.png) |
+| *About us* | *Terms & Conditions* |
+
+## Pages
+
+| Route | Description |
+|---|---|
+| `/` | Home. browse active auction listings |
+| `/login` | Log in to your account |
+| `/register` | Create a new account |
+| `/submit` | Submit a property for auction |
+| `/auction/{id}` | Auction detail and bidding page |
+| `/admin` | Admin panel : approve listings sent from/submit|
+---
+
+### Initial Design Sketches
+
+| | | | |
+|---|---|---|---|
+| ![Notes 1](media/screenshots/notes/leeinitialnotespage1.jpg) | ![Notes 2](media/screenshots/notes/leeinitialnotespage2.jpg) | ![Notes 3](media/screenshots/notes/leeinitialnotespage3.jpg) | ![Notes 4](media/screenshots/notes/leeinitialnotespage4.jpg) |
+| ![Notes 5](media/screenshots/notes/leeinitialnotespage5.jpg) | ![Notes 6](media/screenshots/notes/leeinitialnotespage6.jpg) | ![Notes 7](media/screenshots/notes/leeinitialnotespage7.jpg) | ![Notes 8](media/screenshots/notes/leeinitialnotespage8.jpg) |
+| ![Notes 9](media/screenshots/notes/leeinitialnotespage9.jpg) | ![Notes 10](media/screenshots/notes/leeinitialnotespage10.jpg) | ![Notes 11](media/screenshots/notes/leeinitialnotespage11.jpg) | |
+
+| | |
+|---|---|
+| ![Lee's sketch](media/screenshots/notes/leeinitialnotespage11.jpg) | ![Gaia's sketch](media/screenshots/notes/gaiawebsitesketch.jpeg) |
+| *Lee's initial website sketch* | *Gaia's initial website sketch* |
+
+
 ## Notes for Markers
 
 - The AI proxy server is already deployed and live. no local setup needed
@@ -133,6 +171,7 @@ All data structures are custom implementations — no third-party or standard li
 - Unit tests are in `tests/PropertyAuction.Tests.Unit/`
 - The report is in `docs/Report/`
 - The video demonstration is in `media/demo/`
+---
 
 
 ## Authors
