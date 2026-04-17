@@ -4,8 +4,26 @@
 
 **CST2550 Group Coursework Middlesex University**
 
-[📄 View Report](docs/Report/Mains_Report.pdf)
+![.NET](https://img.shields.io/badge/.NET_10-512BD4?style=flat&logo=dotnet&logoColor=white)
+![C#](https://img.shields.io/badge/C%23-239120?style=flat&logo=csharp&logoColor=white)
+![Blazor](https://img.shields.io/badge/Blazor-512BD4?style=flat&logo=blazor&logoColor=white)
+![NUnit](https://img.shields.io/badge/NUnit-91_tests-brightgreen?style=flat)
+
 ---
+## 📄 Report
+
+> **[Click here to view the full project report](docs/Report/Mains_Report.pdf)**
+
+---
+
+## 🎥 Video demonstration
+
+[![Video Demo](https://img.youtube.com/vi/_YqDHitHWgA/0.jpg)](https://youtu.be/_YqDHitHWgA)
+
+[▶ Watch on YouTube](https://youtu.be/_YqDHitHWgA)
+
+---
+
 
 ## Prerequisites
 
@@ -130,7 +148,7 @@ All data structures are custom implementations — no third-party or standard li
 | ![Login](media/screenshots/websitescreenshots/Login.png) | ![Submit property](media/screenshots/websitescreenshots/submitproperty.png) |
 | *Login* | *Submit a property* |
 | ![Admin access](media/screenshots/websitescreenshots/Adminaccess.png) | ![Admin listings](media/screenshots/websitescreenshots/adminpanellistings.png) |
-| *Admin login* | *Admin panel : listings* |
+| *Admin login (pass: admin123)* | *Admin panel : listings* |
 | ![Admin approved](media/screenshots/websitescreenshots/adminpanelafterlisingisapproved.png) | ![Admin enquiries](media/screenshots/websitescreenshots/adminpanelenquiries.png) |
 | *Admin panel — approved listing* | *Admin panel : contact enquiries* |
 | ![Contact](media/screenshots/websitescreenshots/ContactUs.png) | ![AI Agent](media/screenshots/websitescreenshots/AIagentcomponent.png) |
@@ -171,6 +189,7 @@ All data structures are custom implementations — no third-party or standard li
 - Unit tests are in `tests/PropertyAuction.Tests.Unit/`
 - The report is in `docs/Report/`
 - The video demonstration is in `media/demo/`
+- The admin panel is accessible at `/admin` - password: `admin123`
 ---
 
 
