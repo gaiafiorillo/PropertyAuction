@@ -4,8 +4,26 @@
 
 **CST2550 Group Coursework Middlesex University**
 
-[📄 View Report](docs/Report/Mains_Report.pdf)
+![.NET](https://img.shields.io/badge/.NET_10-512BD4?style=flat&logo=dotnet&logoColor=white)
+![C#](https://img.shields.io/badge/C%23-239120?style=flat&logo=csharp&logoColor=white)
+![Blazor](https://img.shields.io/badge/Blazor-512BD4?style=flat&logo=blazor&logoColor=white)
+![NUnit](https://img.shields.io/badge/NUnit-91_tests-brightgreen?style=flat)
+
 ---
+## 📄 Report
+
+> **[Click here to view the full project report](docs/Report/Mains_Report.pdf)**
+
+---
+
+## 🎥 Video demonstration
+
+[![Video Demo](https://img.youtube.com/vi/_YqDHitHWgA/0.jpg)](https://youtu.be/_YqDHitHWgA)
+
+[▶ Watch on YouTube](https://youtu.be/_YqDHitHWgA)
+
+---
+
 
 ## Prerequisites
 
