@@ -130,7 +130,7 @@ All data structures are custom implementations — no third-party or standard li
 | ![Login](media/screenshots/websitescreenshots/Login.png) | ![Submit property](media/screenshots/websitescreenshots/submitproperty.png) |
 | *Login* | *Submit a property* |
 | ![Admin access](media/screenshots/websitescreenshots/Adminaccess.png) | ![Admin listings](media/screenshots/websitescreenshots/adminpanellistings.png) |
-| *Admin login* | *Admin panel : listings* |
+| *Admin login (pass: admin123)* | *Admin panel : listings* |
 | ![Admin approved](media/screenshots/websitescreenshots/adminpanelafterlisingisapproved.png) | ![Admin enquiries](media/screenshots/websitescreenshots/adminpanelenquiries.png) |
 | *Admin panel — approved listing* | *Admin panel : contact enquiries* |
 | ![Contact](media/screenshots/websitescreenshots/ContactUs.png) | ![AI Agent](media/screenshots/websitescreenshots/AIagentcomponent.png) |
@@ -171,6 +171,7 @@ All data structures are custom implementations — no third-party or standard li
 - Unit tests are in `tests/PropertyAuction.Tests.Unit/`
 - The report is in `docs/Report/`
 - The video demonstration is in `media/demo/`
+- The admin panel is accessible at `/admin` - password: `admin123`
 ---
 
 
